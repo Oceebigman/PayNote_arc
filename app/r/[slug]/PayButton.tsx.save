@@ -1,0 +1,78 @@
+'use client'
+
+import { useState } from 'react'
+
+interface Props {
+  amount: string
+  toAddress: string
+}
+
+const ARC_TESTNET = {
+  chainId: '0x4ce752',  // 5042002 in hex
+  chainName: 'Arc Testnet',
+  nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
+  rpcUrls: ['https://rpc.testnet.arc.network'],
+  blockExplorerUrls: ['https://testnet.arcscan.app'],
+}
+
+export default function PayButton({ amount, toAddress }: Props) {
+  const [status, setStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+  const [txHash, setTxHash] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  async function handlePay() {
+    const ethereum = (window as unknown as { ethereum?: unknown }).ethereum as {
+      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
+    } | undefined
+
+    if (!ethereum) {
+      setStatus('error')
+      setErrorMsg('MetaMask not detected. Please install the MetaMask extension.')
+      return
+    }
+
+    try {
+      setStatus('pending')
+      setErrorMsg('')
+
+      // Request account access
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' }) as string[]
+      const from = accounts[0]
+
+
+      // Only switch if not already on Arc Testnet
+      const currentChain = await ethereum.request({ method: 'eth_chainId' }) as string
+      if (currentChain.toLowerCase() !== ARC_TESTNET.chainId.toLowerCase()) {
+        try {
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: ARC_TESTNET.chainId }],
+          })
+        } catch (switchErr: unknown) {
+          const se = switchErr as { code?: number }
+          if (se.code === 4001) throw switchErr
+        }
+      }
+
+      // On Arc, USDC is the native token — use a plain ETH transfer
+      // Amount in wei (18 decimals for native USDC on Arc)
+      const valueInWei = BigInt(Math.round(parseFloat(amount) * 1e18))
+      const valueHex = '0x' + valueInWei.toString(16)
+
+      const hash = await ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from,
+          to: toAddress,
+          value: valueHex,
+          gas: '0x5208', // 21000 — standard native transfer
+        }],
+      }) as string
+
+      setTxHash(hash)
+      setStatus('success')
+    } catch (err: unknown) {
+      const e = err as { code?: number; message?: string }
+      setStatus('error')
+    
