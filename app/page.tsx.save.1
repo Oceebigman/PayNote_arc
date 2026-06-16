@@ -1,0 +1,339 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+
+const ASSETS = {
+  USDC: { address: '0x3600000000000000000000000000000000000000', decimals: 6, symbol: 'USDC' },
+  EURC: { address: '0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a', decimals: 6, symbol: 'EURC' },
+  USYC: { address: '0xe9185F0c5F296Ed1797AaE4238D26CCaBEadb86C', decimals: 6, symbol: 'USYC' },
+  QCAD: { address: '', decimals: 6, symbol: 'QCAD', available: false },
+}
+
+function isValidAddress(addr: string) {
+  return /^0x[0-9a-fA-F]{40}$/.test(addr)
+}
+
+interface FieldError {
+  amount?: string
+  reason?: string
+  to_address?: string
+}
+
+export default function Home() {
+  const router = useRouter()
+  const formRef = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(false)
+  const [serverError, setServerError] = useState('')
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const [values, setValues] = useState({ amount: '', reason: '', note: '', to_address: '', expires_in: '' })
+  const [token, setToken] = useState<'USDC' | 'EURC' | 'USYC' | 'QCAD'>('USDC')
+  const [dark, setDark] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('paynote-theme')
+    if (saved === 'dark') setDark(true)
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('amount') || params.get('reason')) {
+      setValues(v => ({
+        ...v,
+        amount: params.get('amount') || v.amount,
+        reason: params.get('reason') || v.reason,
+        note: params.get('note') || v.note,
+      }))
+      setShowForm(true)
+    }
+  }, [])
+
+  function toggleDark() {
+    setDark(d => {
+      localStorage.setItem('paynote-theme', !d ? 'dark' : 'light')
+      return !d
+    })
+  }
+
+  function scrollToForm() {
+    setShowForm(true)
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }
+
+  function validate(): FieldError {
+    const errors: FieldError = {}
+    const n = parseFloat(values.amount)
+    if (isNaN(n) || n <= 0) errors.amount = 'Enter a valid amount greater than 0'
+    if (values.reason.trim().length < 3) errors.reason = 'Reason must be at least 3 characters'
+    if (!isValidAddress(values.to_address)) errors.to_address = 'Must be a valid 0x address (42 characters)'
+    return errors
+  }
+
+  const errors = validate()
+  const isValid = Object.keys(errors).length === 0
+
+  function handleBlur(field: string) {
+    setTouched(t => ({ ...t, [field]: true }))
+  }
+
+  function handleChange(field: string, value: string) {
+    setValues(v => ({ ...v, [field]: value }))
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setTouched({ amount: true, reason: true, to_address: true })
+    if (!isValid) return
+    setServerError('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...values, token, expires_in: values.expires_in ? Number(values.expires_in) : undefined }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Something went wrong')
+      router.push('/confirm/' + data.slug)
+    } catch (err: unknown) {
+      setServerError(err instanceof Error ? err.message : 'Something went wrong')
+      setLoading(false)
+    }
+  }
+
+  function fieldState(field: keyof FieldError) {
+    if (touched[field] && errors[field]) return 'error'
+    if (touched[field] && !errors[field] && values[field]) return 'ok'
+    return 'idle'
+  }
+
+  function inputClass(field: keyof FieldError, extra = '') {
+    const state = fieldState(field)
+    const base = 'w-full rounded-xl px-4 py-3 text-base placeholder-gray-400 border outline-none transition-all ' + extra
+    const darkBase = dark ? 'bg-gray-900 text-gray-100 ' : 'bg-white text-gray-900 '
+    if (state === 'error') return base + darkBase + 'border-red-400 focus:ring-2 focus:ring-red-100'
+    if (state === 'ok') return base + darkBase + 'border-green-400 focus:ring-2 focus:ring-green-100'
+    return base + darkBase + (dark ? 'border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-900' : 'border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100')
+  }
+
+  const bg = dark ? '#0f1117' : '#F4F5F7'
+  const card = dark ? '#1a1d27' : '#ffffff'
+  const border = dark ? '#2a2d3a' : '#e5e7eb'
+  const text = dark ? '#f1f5f9' : '#111827'
+  const muted = dark ? '#64748b' : '#9ca3af'
+  const inputBg = dark ? '#0f1117' : '#f9fafb'
+
+  return (
+    <div className="min-h-screen flex flex-col transition-colors duration-200" style={{background: bg}}>
+
+      <nav className="px-5 sm:px-10 py-4 flex items-center justify-between border-b" style={{borderColor: border, background: card}}>
+        <div className="flex items-center gap-3">
+          <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
+            <defs><linearGradient id="pgnav" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4A154B"/><stop offset="100%" stopColor="#1A44C4"/></linearGradient></defs>
+            <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgnav)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+          </svg>
+          <span className="font-bold text-xl tracking-tight" style={{color: text}}>PayNote</span>
+        </div>
+        <div className="flex items-center gap-5">
+          <a href="/templates" className="text-base font-medium hidden sm:block" style={{color: muted}}>Templates</a>
+          <a href="/docs" className="text-base font-medium hidden sm:block" style={{color: muted}}>Docs</a>
+          <button onClick={toggleDark} className="p-2 rounded-lg border transition-colors" style={{borderColor: border, background: inputBg}}>
+            {dark ? (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+              </svg>
+            )}
+          </button>
+        </div>
+      </nav>
+
+      {!showForm ? (
+        <main className="flex-1 flex flex-col justify-between px-5 sm:px-10 py-8 max-w-5xl mx-auto w-full">
+          <div className="text-center py-6">
+            <div className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full border mb-6" style={{borderColor: border, color: muted, background: card}}>
+              <span className="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+              Live on Arc Testnet
+            </div>
+            <h1 className="text-4xl sm:text-6xl font-bold mb-4 leading-tight" style={{color: text}}>
+              Request payments.<br/>
+              <span style={{background: 'linear-gradient(135deg, #4A154B, #1A44C4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>Share a link. Get paid.</span>
+            </h1>
+            <p className="text-lg sm:text-xl mb-8 max-w-xl mx-auto" style={{color: muted}}>
+              Turn your wallet address into a shareable payment link. No accounts. No custody. Verified on-chain.
+            </p>
+            <button onClick={scrollToForm}
+              className="text-white font-bold px-10 py-4 rounded-xl text-lg transition-all"
+              style={{background: 'linear-gradient(135deg, #102A83, #1A44C4)'}}>
+              Create payment request
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
+            {[
+              { step: '01', title: 'Create a request', desc: 'Enter amount, reason, and your wallet. Pick USDC or EURC.' },
+              { step: '02', title: 'Share the link', desc: 'Get a unique URL. Send it anywhere — email, Telegram, Twitter.' },
+              { step: '03', title: 'Get paid on-chain', desc: 'Payer connects wallet. Payment goes directly to you.' },
+            ].map(item => (
+              <div key={item.step} className="rounded-2xl border p-5" style={{background: card, borderColor: border}}>
+                <p className="text-base font-bold mb-2" style={{color: '#1A44C4'}}>{item.step}</p>
+                <p className="font-bold text-base mb-1" style={{color: text}}>{item.title}</p>
+                <p className="text-base leading-relaxed" style={{color: muted}}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl border p-5" style={{background: card, borderColor: border}}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+              {[
+                { label: 'Non-Custodial', desc: 'We never hold your funds' },
+                { label: 'Verified On-Chain', desc: 'Every payment confirmed' },
+                { label: 'Sub-second finality', desc: 'Powered by Arc Network' },
+                { label: 'Multi-currency', desc: 'USDC, EURC and more' },
+              ].map(b => (
+                <div key={b.label}>
+                  <p className="text-base font-bold mb-0.5" style={{color: text}}>{b.label}</p>
+                  <p className="text-sm" style={{color: muted}}>{b.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      ) : (
+        <main ref={formRef} className="flex-1 flex items-center justify-center px-5 py-10">
+          <div className="w-full max-w-lg">
+            <div className="rounded-2xl border overflow-hidden shadow-sm" style={{background: card, borderColor: border}}>
+              <div className="px-6 py-5" style={{background: 'linear-gradient(135deg, #0B194F 0%, #102A83 60%, #1A44C4 100%)'}}>
+                <p className="text-white font-bold text-xl">Request a payment</p>
+                <p className="text-blue-200 text-base mt-1">Generate a shareable payment link in seconds.</p>
+              </div>
+
+              <div className="p-6">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+
+                  <div>
+                    <label className="block text-sm font-semibold uppercase tracking-widest mb-2" style={{color: muted}}>Token</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {Object.entries(ASSETS).map(([symbol, asset]) => {
+                        const isDisabled = !asset.available
+                        return (
+                          <button key={symbol} type="button"
+                            onClick={() => { if (!isDisabled) setToken(symbol as 'USDC' | 'EURC' | 'USYC' | 'QCAD') }}
+                            className="flex items-center justify-center py-3 rounded-xl border font-bold text-base transition-all"
+                            style={{
+                              borderColor: token === symbol ? '#1A44C4' : border,
+                              background: token === symbol ? (dark ? '#0d1a3a' : '#EFF6FF') : inputBg,
+                              color: isDisabled ? muted : token === symbol ? '#1A44C4' : muted,
+                              opacity: isDisabled ? 0.5 : 1,
+                              cursor: isDisabled ? 'not-allowed' : 'pointer',
+                            }}>
+                            {asset.symbol}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold uppercase tracking-widest mb-2" style={{color: muted}}>Amount</label>
+                    <div className="relative">
+                      1" placeholder="0.00"
+                        value={values.amount}
+                        onChange={e => handleChange('amount', e.target.value)}
+                        onBlur={() => handleBlur('amount')}
+                        className={inputClass('amount', 'pr-24')}
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-base font-bold" style={{color: '#1A44C4'}}>{token}</span>
+                    </div>
+                    {touched.amount && errors.amount && <p className="text-red-400 text-sm mt-1.5">⚠ {errors.amount}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold uppercase tracking-widest mb-2" style={{color: muted}}>Reason</label>
+                    <input type="text" placeholder="e.g. Freelance invoice #003"
+                      value={values.reason}
+                      onChange={e => handleChange('reason', e.target.value)}
+                      onBlur={() => handleBlur('reason')}
+                      className={inputClass('reason')}
+                    />
+                    {touched.reason && errors.reason && <p className="text-red-400 text-sm mt-1.5">⚠ {errors.reason}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold uppercase tracking-widest mb-2" style={{color: muted}}>Your Wallet Address</label>
+                    <input type="text" placeholder="0x0000000000000000000000000000000000000000"
+                      value={values.to_address}
+                      onChange={e => handleChange('to_address', e.target.value)}
+                      onBlur={() => handleBlur('to_address')}
+                      className={inputClass('to_address', 'font-mono')}
+                    />
+                    {touched.to_address && errors.to_address && <p className="text-red-400 text-sm mt-1.5">⚠ {errors.to_address}</p>}
+                    {touched.to_address && !errors.to_address && values.to_address && <p className="text-green-500 text-sm mt-1.5">✓ Valid address</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold uppercase tracking-widests mb-2" style={{color: muted}}>
+                      Note <span className="normal-case font-normal" style={{color: dark ? '#374151' : '#d1d5db'}}>(optional)</span>
+                    </label>
+                    <input type="text" placeholder="Add a message for the payer…"
+                      value={values.note}
+                      onChange={e => handleChange('note', e.target.value)}
+                      className={'w-full rounded-xl px-4 py-3 text-base placeholder-gray-400 border outline-none transition-all ' + (dark ? 'bg-gray-900 text-gray-100 border-gray-700 focus:border-blue-500' : 'bg-white text-gray-900 border-gray-200 focus:border-blue-400')}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold uppercase tracking-widest mb-2" style={{color: muted}}>
+                      Expires <span className="normal-case font-normal" style={{color: dark ? '#374151' : '#d1d5db'}}>(optional)</span>
+                    </label>
+                    <select value={values.expires_in} onChange={e => handleChange('expires_in', e.target.value)}
+                      className={'w-full rounded-xl px-4 py-3 text-base border outline-none transition-all ' + (dark ? 'bg-gray-900 text-gray-100 border-gray-700 focus:border-blue-500' : 'bg-white text-gray-900 border-gray-200 focus:border-blue-400')}>
+                      <option value="">No expiry</option>
+                      <option value="86400">24 hours</option>
+                      <option value="172800">48 hours</option>
+                      <option value="604800">7 days</option>
+                      <option value="2592000">30 days</option>
+                    </select>
+                  </div>
+
+                  {serverError && (
+                    <div className="rounded-xl px-4 py-3 border border-red-200 bg-red-50">
+                      <p className="text-red-500 text-base">{serverError}</p>
+                    </div>
+                  )}
+
+                  <button type="submit" disabled={loading}
+                    className="w-full text-white font-bold py-4 rounded-xl transition-all text-base tracking-wide disabled:opacity-50"
+                    style={{background: loading ? '#6b7280' : 'linear-gradient(135deg, #102A83 0%, #1A44C4 100%)'}}>
+                    {loading ? 'Creating link…' : 'Generate payment link'}
+                  </button>
+
+                  <p className="text-center text-sm" style={{color: muted}}>
+                    No account needed · Get test tokens at{' '}
+                    <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{color: '#1A44C4'}}>faucet.circle.com</a>
+                  </p>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      )}
+
+      <footer className="py-5 border-t" style={{borderColor: border, background: card}}>
+        <div className="max-w-5xl mx-auto px-5 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-sm" style={{color: muted}}>
+            PayNote · Powered by <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-medium" style={{color: '#1A44C4'}}>Arc</a>
+          </p>
+          <div className="flex items-center gap-5">
+            <a href="/templates" className="text-sm" style={{color: muted}}>Templates</a>
+            <a href="/history" className="text-sm" style={{color: muted}}>History</a>
+            <a href="/docs" className="text-sm" style={{color: muted}}>Docs</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}

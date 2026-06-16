@@ -220,7 +220,7 @@ export async function GET() {
             content: { 'application/json': { schema: { type: 'object', required: ['slug','tx_hash'], properties: { slug: { type: 'string' }, tx_hash: { type: 'string' } } } } }
           },
           responses: {
-            '200': { description: 'Verification result', content: { 'application/json': { schema: { type: 'object', properties: { verified: { type: 'boolean' }, updated: { type: 'boolean' }, block: { type: 'number' }, retry: { type: 'boolean' } } } } } },
+            '200': { description: 'Verification result', content: { 'application/json': { schema: { type: 'object', properties: { verified: { type: 'boolean' }, updated: { type: 'boolean' }, block: { type: 'number' }, retry: { type: 'boolean' }, onchain_memo: { type: 'string', nullable: true } } } } } },
             '503': { description: 'Arc RPC timeout — retry in 30 seconds' }
           }
         }

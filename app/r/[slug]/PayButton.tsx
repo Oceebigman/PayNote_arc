@@ -14,12 +14,29 @@ interface Props {
 
 const ARC_CHAIN_IDS = ['0x4ce752', '0x4cef52']
 
+// Arc v0.7.2 batch transaction contract
+// Allows approve + transfer in ONE transaction instead of two
+const MULTICALL3FROM = '0xEb7c000000000000000000000000000000000000'
+
 function encodeApprove(spender: string, amount: bigint): string {
   return '0x095ea7b3' + spender.replace('0x', '').padStart(64, '0') + amount.toString(16).padStart(64, '0')
 }
 
 function encodeTransfer(to: string, amount: bigint): string {
   return '0xa9059cbb' + to.replace('0x', '').padStart(64, '0') + amount.toString(16).padStart(64, '0')
+}
+
+function encodeMemo(text: string): string {
+  // Encode payment reason as UTF-8 hex for Arc v0.7.2 transaction memo
+  // Memo contract address: 0x9702000000000000000000000000000000000000
+  const bytes = new TextEncoder().encode(text.slice(0, 256)) // max 256 chars
+  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+  // Memo contract call: memo(bytes) selector = 0x5a1db8df
+  const selector = '5a1db8df'
+  const offset = '0000000000000000000000000000000000000000000000000000000000000020'
+  const length = bytes.length.toString(16).padStart(64, '0')
+  const paddedHex = hex.padEnd(Math.ceil(hex.length / 64) * 64, '0')
+  return '0x' + selector + offset + length + paddedHex
 }
 
 function encodeBalanceOf(address: string): string {
@@ -112,6 +129,20 @@ export default function PayButton({ amount, toAddress, token, tokenAddress, toke
 
       setTxHash(hash)
       setStatus('success')
+
+      // Arc v0.7.2 — attach payment reason as onchain memo (best-effort)
+      try {
+        const memoText = `PayNote:${slug || 'payment'} — ${amount} ${token}`
+        await ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from,
+            to: '0x9702000000000000000000000000000000000000',
+            data: encodeMemo(memoText),
+            value: '0x0',
+          }],
+        })
+      } catch { /* memo is best-effort, never block payment */ }
 
       if (slug) {
         await new Promise(r => setTimeout(r, 2000))

@@ -1,0 +1,174 @@
+'use client'
+
+import ExpiryCountdown from '@/app/components/ExpiryCountdown'
+import { useState, useEffect } from 'react'
+import PayButton from './PayButton'
+
+const ASSETS: Record<string, { address: string; symbol: string }> = {
+  USDC: { address: '0x3600000000000000000000000000000000000000', symbol: 'USDC' },
+  EURC: { address: '0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a', symbol: 'EURC' },
+  USYC: { address: '0xe9185F0c5F296Ed1797AaE4238D26CCaBEadb86C', symbol: 'USYC' },
+}
+
+interface Props {
+  req: { amount: string; reason: string; note: string; to_address: string; status: string; id: string; token: string; expires_at: string | null }
+  slug: string
+  appUrl: string
+}
+
+function CopyLinkBar({ url, dark, border, card, muted }: { url: string; dark: boolean; border: string; card: string; muted: string }) {
+  const [copied, setCopied] = useState(false)
+  function handleCopy() {
+    navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+
+    
+
+<div className="rounded-xl border px-4 py-3 flex items-center gap-3" style={{background: card, borderColor: border}}>
+      <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+      </svg>
+      <p className="text-xs font-mono truncate flex-1" style={{color: muted}}>{url}</p>
+      <button onClick={handleCopy}
+        className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg transition-all text-white"
+        style={{background: copied ? '#16a34a' : 'linear-gradient(135deg, #102A83, #1A44C4)'}}>
+        {copied ? '✓ Copied' : 'Copy'}
+      </button>
+    </div>
+  )
+}
+
+export default function DarkModeWrapper({ req, slug, appUrl }: Props) {
+  const [dark, setDark] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('paynote-theme')
+    if (saved === 'dark') setDark(true)
+  }, [])
+
+  function toggleDark() {
+    setDark(d => {
+      localStorage.setItem('paynote-theme', !d ? 'dark' : 'light')
+      return !d
+    })
+  }
+
+  const token = req.token || 'USDC'
+  const asset = ASSETS[token] || ASSETS.USDC
+
+  const bg = dark ? '#0f1117' : '#F4F5F7'
+  const card = dark ? '#1a1d27' : '#ffffff'
+  const border = dark ? '#2a2d3a' : '#e5e7eb'
+  const text = dark ? '#f1f5f9' : '#111827'
+  const muted = dark ? '#64748b' : '#9ca3af'
+  const inputBg = dark ? '#0f1117' : '#f9fafb'
+
+  const isCompleted = req.status === 'completed'
+
+  return (
+    <div className="min-h-screen flex flex-col transition-colors duration-200" style={{background: bg}}>
+      <main className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+                <defs>
+                  <linearGradient id="pg2" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#4A154B"/>
+                    <stop offset="100%" stopColor="#1A44C4"/>
+                  </linearGradient>
+                </defs>
+                <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pg2)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+              <span className="font-bold text-lg tracking-tight" style={{color: text}}>PayNote</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5 text-xs border rounded-full px-3 py-1.5" style={{color: muted, borderColor: border}}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+                  Arc Testnet
+                </span>
+                {req.expires_at && <ExpiryCountdown expiresAt={req.expires_at} />}
+              </div>
+              <button onClick={toggleDark} className="p-2 rounded-lg border transition-colors" style={{borderColor: border, background: inputBg}}>
+                {dark ? (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border overflow-hidden shadow-sm mb-4" style={{background: card, borderColor: border}}>
+            <div className="px-6 py-5" style={{background: isCompleted ? 'linear-gradient(135deg, #064e3b, #065f46)' : 'linear-gradient(135deg, #0B194F 0%, #102A83 60%, #1A44C4 100%)'}}>
+              {isCompleted && (
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-5 h-5 rounded-full bg-green-400 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                  <span className="text-green-300 text-xs font-semibold uppercase tracking-widest">Completed</span>
+                </div>
+              )}
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{color: isCompleted ? '#6ee7b7' : '#93c5fd'}}>Payment Request</p>
+              <p className="text-white font-bold text-4xl">{Number(req.amount).toFixed(2)} <span className="text-xl font-medium" style={{color: isCompleted ? '#6ee7b7' : '#93c5fd'}}>{token}</span></p>
+              <p className="text-sm mt-2" style={{color: isCompleted ? '#a7f3d0' : '#bfdbfe'}}>{req.reason}</p>
+            </div>
+
+            <div className="p-6">
+              {req.note && (
+                <div className="rounded-xl border px-4 py-3 text-sm mb-5 italic" style={{background: inputBg, borderColor: border, color: muted}}>
+                  "{req.note}"
+                </div>
+              )}
+
+              <div className="rounded-xl px-4 py-3 mb-6" style={{background: inputBg}}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{color: muted}}>Send to</p>
+                <p className="text-xs font-mono break-all leading-relaxed" style={{color: text}}>{req.to_address}</p>
+              </div>
+
+              {isCompleted ? (
+                <div className="text-center py-4">
+                  <p className="font-semibold mb-1" style={{color: text}}>Payment completed</p>
+                  <p className="text-sm mb-4" style={{color: muted}}>This request is no longer accepting payments.</p>
+                  <a href={'/receipt/' + req.id}
+                    className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl text-white"
+                    style={{background: 'linear-gradient(135deg, #102A83, #1A44C4)'}}>
+                    {"View Receipt →"}
+                  </a>
+                </div>
+              ) : (
+                <PayButton
+                  amount={Number(req.amount).toFixed(2)}
+                  toAddress={req.to_address}
+                  token={token}
+                  tokenAddress={asset.address}
+                  dark={dark}
+                  slug={slug}
+                />
+              )}
+            </div>
+          </div>
+
+          <CopyLinkBar url={appUrl + '/r/' + slug} dark={dark} border={border} card={card} muted={muted} />
+        </div>
+      </main>
+
+      <footer className="py-4 border-t" style={{borderColor: border, background: card}}>
+        <p className="text-center text-xs" style={{color: muted}}>
+          PayNote · Powered by <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-medium" style={{color: '#1A44C4'}}>Arc</a>
+        </p>
+      </footer>
+    </div>
+  )
+}

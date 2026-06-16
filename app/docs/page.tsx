@@ -2,9 +2,29 @@
 
 import { useEffect, useState } from 'react'
 
+const SECTIONS = [
+  { id: 'quickstart', label: 'Quick Start' },
+  { id: 'auth', label: 'Authentication' },
+  { id: 'create', label: 'Create Request' },
+  { id: 'agent', label: 'Agent API' },
+  { id: 'x402', label: 'x402 Protocol' },
+  { id: 'poll', label: 'Poll Status' },
+  { id: 'verify', label: 'Verify Payment' },
+  { id: 'webhooks', label: 'Webhooks' },
+  { id: 'signed', label: 'Signed Intents' },
+  { id: 'sdk', label: 'SDKs' },
+  { id: 'widget', label: 'Widget' },
+  { id: 'agent-wallets', label: 'Agent Wallets' },
+  { id: 'arc-v072', label: 'Arc v0.7.2' },
+  { id: 'contracts', label: 'Contracts' },
+  { id: 'tokens', label: 'Tokens' },
+]
+
 export default function DocsPage() {
   const appUrl = 'https://paynote.space'
   const [dark, setDark] = useState(false)
+  const [active, setActive] = useState('quickstart')
+  const [mobileNav, setMobileNav] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('paynote-theme')
@@ -13,7 +33,21 @@ export default function DocsPage() {
       setDark(document.documentElement.getAttribute('data-theme') === 'dark')
     })
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-    return () => observer.disconnect()
+
+    // Track active section on scroll
+    const handleScroll = () => {
+      const sections = SECTIONS.map(s => document.getElementById(s.id))
+      const scrollY = window.scrollY + 120
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = sections[i]
+        if (el && el.offsetTop <= scrollY) {
+          setActive(SECTIONS[i].id)
+          break
+        }
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => { observer.disconnect(); window.removeEventListener('scroll', handleScroll) }
   }, [])
 
   function toggleDark() {
@@ -23,535 +57,437 @@ export default function DocsPage() {
     document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
   }
 
+  function scrollTo(id: string) {
+    setActive(id)
+    setMobileNav(false)
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   const bg = dark ? '#080c14' : '#f4f6fb'
   const card = dark ? '#111827' : '#ffffff'
   const border = dark ? '#1e2a3a' : '#e2e8f0'
   const text = dark ? '#f1f5f9' : '#0f172a'
   const muted = dark ? '#475569' : '#64748b'
   const inputBg = dark ? '#0d1321' : '#f8fafc'
-  const navBg = dark ? 'rgba(8,12,20,0.92)' : 'rgba(255,255,255,0.92)'
-  const codeBg = '#0d1117'
+  const sidebarBg = dark ? '#0d1321' : '#ffffff'
+  const navBg = dark ? 'rgba(8,12,20,0.95)' : 'rgba(255,255,255,0.95)'
 
   return (
-    <div className="min-h-screen transition-colors duration-300" style={{background: bg, color: text, fontFamily: '"Inter", system-ui, sans-serif'}}>
+    <div style={{ background: bg, color: text, fontFamily: '"Inter", system-ui, sans-serif', minHeight: '100vh' }}>
 
-      <nav className="sticky top-0 z-50 px-5 sm:px-10 py-4 flex items-center justify-between border-b backdrop-blur-xl" style={{borderColor: border, background: navBg}}>
-        <div className="flex items-center gap-3">
-          <a href="/" className="flex items-center gap-2.5 group">
-            <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
-              <defs><linearGradient id="pgd" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4A154B"/><stop offset="100%" stopColor="#1A44C4"/></linearGradient></defs>
-              <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgd)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            </svg>
-            <span className="font-black text-lg group-hover:opacity-70 transition-opacity" style={{color: text}}>PayNote</span>
-          </a>
-          <span className="text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-md" style={{background: dark ? '#1e2a3a' : '#f1f5f9', color: muted}}>Docs</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <a href="/build" className="text-sm font-semibold hover:opacity-70 transition-opacity" style={{color: muted}}>API Use Cases</a>
-          <button onClick={toggleDark} className="p-2.5 rounded-xl border transition-all hover:scale-105" style={{borderColor: border, background: dark ? '#1a2535' : '#f1f5f9'}}>
-            {dark
-              ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-              : <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-            }
-          </button>
-          <a href="/" className="text-sm font-bold text-white px-4 py-2 rounded-xl hover:opacity-90 transition-opacity" style={{background: 'linear-gradient(135deg, #102A83, #1A44C4)'}}>← App</a>
+      {/* Top nav */}
+      <nav style={{ position: 'sticky', top: 0, zIndex: 50, borderBottom: `1px solid ${border}`, background: navBg, backdropFilter: 'blur(12px)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Mobile menu toggle */}
+            <button onClick={() => setMobileNav(o => !o)} style={{ display: 'none', padding: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: 'transparent', cursor: 'pointer' }} className="mobile-menu-btn">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: muted }}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+              <svg width="24" height="24" viewBox="0 0 36 36" fill="none">
+                <defs><linearGradient id="pgd" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4A154B"/><stop offset="100%" stopColor="#1A44C4"/></linearGradient></defs>
+                <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgd)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+              <span style={{ fontWeight: 900, fontSize: '18px', color: text }}>PayNote</span>
+            </a>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: muted, background: inputBg, border: `1px solid ${border}`, borderRadius: '6px', padding: '2px 8px' }}>Docs</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <a href="/build" style={{ fontSize: '14px', fontWeight: 600, color: muted, textDecoration: 'none' }}>Use the API</a>
+            <button onClick={toggleDark} style={{ padding: '8px', borderRadius: '10px', border: `1px solid ${border}`, background: inputBg, cursor: 'pointer' }}>
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: muted }}>
+                {dark
+                  ? <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+                  : <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                }
+              </svg>
+            </button>
+            <a href="/" style={{ fontSize: '13px', fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg,#102A83,#1A44C4)', borderRadius: '10px', padding: '8px 16px', textDecoration: 'none' }}>← App</a>
+          </div>
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-12">
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '0' }}>
 
-        <div className="mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full border mb-6 uppercase tracking-widest" style={{borderColor: border, color: muted, background: card}}>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block animate-pulse"></span>
-            API Reference v1.0
+        {/* Sidebar */}
+        <aside style={{
+          width: '240px', flexShrink: 0, position: 'sticky', top: '60px', height: 'calc(100vh - 60px)',
+          overflowY: 'auto', borderRight: `1px solid ${border}`, background: sidebarBg,
+          padding: '24px 0',
+        }}>
+          <div style={{ padding: '0 16px 12px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', color: muted }}>API Reference</div>
+
+          {[
+            { group: 'Getting Started', items: ['quickstart', 'auth'] },
+            { group: 'Core API', items: ['create', 'poll', 'verify'] },
+            { group: 'Agent & Automation', items: ['agent', 'x402', 'webhooks', 'signed'] },
+            { group: 'Developer Tools', items: ['sdk', 'widget', 'agent-wallets'] },
+            { group: 'Network', items: ['arc-v072', 'contracts', 'tokens'] },
+          ].map(group => (
+            <div key={group.group} style={{ marginBottom: '8px' }}>
+              <div style={{ padding: '6px 16px', fontSize: '11px', fontWeight: 700, color: muted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{group.group}</div>
+              {group.items.map(id => {
+                const section = SECTIONS.find(s => s.id === id)
+                if (!section) return null
+                const isActive = active === id
+                return (
+                  <button key={id} onClick={() => scrollTo(id)} style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '7px 16px', fontSize: '14px', fontWeight: isActive ? 700 : 500,
+                    color: isActive ? '#1A44C4' : muted,
+                    background: isActive ? (dark ? '#0d1a3a' : '#EFF6FF') : 'transparent',
+                    border: 'none', borderLeft: isActive ? '2px solid #1A44C4' : '2px solid transparent',
+                    cursor: 'pointer', transition: 'all 0.15s',
+                  }}>
+                    {section.label}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
+
+          <div style={{ margin: '16px', padding: '12px', borderRadius: '12px', background: dark ? '#0d1a3a' : '#EFF6FF', border: `1px solid ${dark ? '#1e3a6e' : '#bfdbfe'}` }}>
+            <p style={{ fontSize: '12px', fontWeight: 700, color: '#1A44C4', marginBottom: '6px' }}>Get API Key</p>
+            <p style={{ fontSize: '11px', color: muted, marginBottom: '8px' }}>Self-serve. No signup.</p>
+            <button onClick={() => scrollTo('auth')} style={{ fontSize: '11px', fontWeight: 700, color: '#1A44C4', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Get started →</button>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black mb-4 leading-tight tracking-tight" style={{color: text}}>
-            PayNote API
-          </h1>
-          <p className="text-lg font-medium mb-8" style={{color: muted}}>
-            Payment coordination infrastructure on Arc. Request, verify, and automate USDC payments with one API call.
-          </p>
+        </aside>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: 'Get API Key', href: '#auth' },
-              { label: 'Create Request', href: '#create' },
-              { label: 'Agent API', href: '#agent' },
-              { label: 'x402 Protocol', href: '#x402' },
-              { label: 'Webhooks', href: '#webhooks' },
-              { label: 'SDK', href: '#sdk' },
-              { label: 'Widget', href: '#widget' },
-              { label: 'Contracts', href: '#contracts' },
-            ].map(link => (
-              <a key={link.label} href={link.href}
-                className="text-xs font-bold px-3 py-2.5 rounded-xl border text-center transition-all hover:border-blue-500 hover:text-blue-500"
-                style={{borderColor: border, color: muted, background: card}}>
-                {link.label}
-              </a>
-            ))}
-          </div>
-        </div>
+        {/* Main content */}
+        <main style={{ flex: 1, minWidth: 0, padding: '40px 48px', maxWidth: '800px' }}>
 
-        <Section id="auth" title="Getting Your API Key" badge="Start Here" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            You don't need to contact anyone. Generate your API key instantly using the self-serve endpoint below. No account required.
-          </p>
-
-          <div className="rounded-2xl border p-5 mb-5" style={{borderColor: '#1A44C430', background: dark ? '#0d1a3a' : '#EFF6FF'}}>
-            <p className="text-sm font-black mb-2" style={{color: '#1A44C4'}}>Self-serve — generate your key in one request</p>
-            <Code dark={dark}>{`curl -X POST ${appUrl}/api/keys/request \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "email": "your@email.com",
-    "project_name": "My Project",
-    "use_case": "Freelance payment tool for USDC invoicing"
-  }'`}</Code>
-            <p className="text-xs font-bold mt-3 mb-2" style={{color: muted}}>Response — your key is returned once. Copy it immediately.</p>
-            <Code dark={dark}>{`{
-  "key": "pn_a1b2c3d4...",
-  "prefix": "pn_a1b2c…",
-  "message": "Store it securely — it will not be shown again.",
-  "docs": "https://paynote.space/docs"
-}`}</Code>
-          </div>
-
-          <p className="text-base mb-3 font-medium" style={{color: muted}}>Once you have your key, pass it in every request:</p>
-          <Code dark={dark}>{`Authorization: Bearer pn_your_api_key`}</Code>
-          <InfoBox dark={dark}>
-            Keys are rate-limited by default. If you need higher limits for production, reach out via the Arc Discord. Your key is tied to your email — don't share it.
-          </InfoBox>
-        </Section>
-
-        <Section id="create" title="POST /api/request" badge="Core" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            Create a payment request. Returns a shareable URL. That's all your payer needs.
-          </p>
-          <Code dark={dark}>{`curl -X POST ${appUrl}/api/request \\
-  -H "Authorization: Bearer pn_your_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "amount": 50,
-    "reason": "Freelance invoice #003",
-    "to_address": "0xYourWalletAddress",
-    "token": "USDC",
-    "note": "Thanks!",
-    "expires_in": 86400,
-    "recurring": "monthly",
-    "display_name": "Acme Studio"
-  }'`}</Code>
-          <Code dark={dark}>{`{
-  "slug": "k8Xm2pQn",
-  "url": "${appUrl}/r/k8Xm2pQn",
-  "amount": 50,
-  "token": "USDC",
-  "status": "pending"
-}`}</Code>
-          <ParamTable dark={dark} border={border} muted={muted} params={[
-            { name: 'amount', type: 'number', required: true, desc: 'Payment amount. Min 0.000001 for nanopayments.' },
-            { name: 'reason', type: 'string', required: true, desc: 'Description shown to the payer.' },
-            { name: 'to_address', type: 'string', required: true, desc: 'Your recipient wallet address (0x...).' },
-            { name: 'token', type: 'string', required: false, desc: 'USDC (default), EURC, or cirBTC.' },
-            { name: 'note', type: 'string', required: false, desc: 'Optional message shown on the pay page.' },
-            { name: 'expires_in', type: 'number', required: false, desc: 'Expiry in seconds. 86400 = 24h.' },
-            { name: 'recurring', type: 'string', required: false, desc: 'once · daily · weekly · monthly · yearly' },
-            { name: 'display_name', type: 'string', required: false, desc: 'Your name or business shown on the pay page.' },
-          ]} />
-        </Section>
-
-        <Section id="agent" title="POST /api/agent/pay" badge="Agentic" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            Optimised for autonomous systems. Returns a complete instruction set. Every response includes ERC-8183 headers so any compliant agent can discover and act on the payment intent automatically — no human in the loop.
-          </p>
-          <Code dark={dark}>{`curl -X POST ${appUrl}/api/agent/pay \\
-  -H "Authorization: Bearer pn_your_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "amount": 100,
-    "reason": "Task completed — milestone #3",
-    "to_address": "0xRecipientAddress",
-    "token": "USDC"
-  }'`}</Code>
-          <Code dark={dark}>{`{
-  "slug": "abc12345",
-  "url": "${appUrl}/r/abc12345",
-  "amount": 100,
-  "token": "USDC",
-  "status": "pending",
-  "erc8183": {
-    "version": "1.0",
-    "intent_id": "abc12345",
-    "network": "arc-testnet"
-  },
-  "instructions": {
-    "pay_url": "${appUrl}/r/abc12345",
-    "poll_url": "${appUrl}/api/poll?slug=abc12345",
-    "verify_url": "${appUrl}/api/verify",
-    "receipt_url": "${appUrl}/receipt/abc12345",
-    "x402_url": "${appUrl}/api/x402?slug=abc12345"
-  }
-}`}</Code>
-          <InfoBox dark={dark} color="blue">
-            Response headers include <code className="font-mono text-blue-400 text-xs">X-ERC8183-Pay-URL</code>, <code className="font-mono text-blue-400 text-xs">X-ERC8183-Poll-URL</code>, <code className="font-mono text-blue-400 text-xs">X-ERC8183-Amount</code>, <code className="font-mono text-blue-400 text-xs">X-ERC8183-Token</code> and more. Any ERC-8183 compliant agent reads these directly — no documentation needed.
-          </InfoBox>
-        </Section>
-
-        <Section id="poll" title="GET /api/poll" badge="Status" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            Lightweight status check. No auth needed. Designed for agent polling loops.
-          </p>
-          <Code dark={dark}>{`curl ${appUrl}/api/poll?slug=k8Xm2pQn`}</Code>
-          <Code dark={dark}>{`{
-  "status": "pending | completed | failed | expired",
-  "tx_hash": "0x...",
-  "completed_at": "2026-06-03T10:00:00.000Z"
-}`}</Code>
-          <InfoBox dark={dark}>
-            Use <code className="font-mono text-xs" style={{color: '#1A44C4'}}>sdk.waitForPayment()</code> instead of manual polling — it handles retries and timeouts automatically.
-          </InfoBox>
-        </Section>
-
-        <Section id="x402" title="x402 Protocol" badge="Agentic" dark={dark} border={border} text={text}>
-          <p className="text-base mb-6 font-medium" style={{color: muted}}>
-            PayNote implements x402 — the HTTP-native payment standard. An agent hits the endpoint, gets a 402 response with payment details in headers, pays via EIP-3009 signature offchain, retries, gets access. Fully autonomous. No human approval.
-          </p>
-
-          <div className="rounded-2xl border p-5 mb-5" style={{borderColor: border, background: inputBg}}>
-            <p className="text-xs font-black uppercase tracking-widest mb-4" style={{color: muted}}>Agent-to-agent flow</p>
-            <div className="flex flex-col gap-2">
+          {/* Hero */}
+          <div style={{ marginBottom: '48px', paddingBottom: '32px', borderBottom: `1px solid ${border}` }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 700, color: '#16a34a', background: dark ? '#0a2a0a' : '#f0fdf4', border: `1px solid ${dark ? '#166534' : '#86efac'}`, borderRadius: '20px', padding: '4px 12px', marginBottom: '16px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a', display: 'inline-block', animation: 'pulse 2s infinite' }}></span>
+              Live on Arc Testnet
+            </div>
+            <h1 style={{ fontSize: '40px', fontWeight: 900, color: text, marginBottom: '12px', lineHeight: 1.1 }}>PayNote API</h1>
+            <p style={{ fontSize: '18px', color: muted, lineHeight: 1.6, marginBottom: '24px' }}>Payment coordination infrastructure on Arc. Non-custodial. Agent-ready. One API call.</p>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {[
-                { n: '1', title: 'Agent requests endpoint', detail: 'GET /api/x402?slug=abc123' },
-                { n: '2', title: 'Server returns 402', detail: 'Payment details in response headers' },
-                { n: '3', title: 'Agent reads headers', detail: 'Amount, token, recipient, network' },
-                { n: '4', title: 'Agent signs EIP-3009', detail: 'Offchain — no gas needed' },
-                { n: '5', title: 'Agent retries with X-PAYMENT', detail: 'base64-encoded authorization' },
-                { n: '6', title: 'Server returns 200', detail: 'Resource delivered. Done.' },
-              ].map(s => (
-                <div key={s.n} className="flex items-start gap-4">
-                  <span className="text-xs font-black w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{background: dark ? '#1e2a3a' : '#EFF6FF', color: '#1A44C4'}}>{s.n}</span>
-                  <div>
-                    <span className="text-sm font-bold" style={{color: text}}>{s.title} </span>
-                    <span className="text-xs font-mono" style={{color: muted}}>{s.detail}</span>
-                  </div>
-                </div>
+                { label: 'Quick Start', id: 'quickstart' },
+                { label: 'Agent API', id: 'agent' },
+                { label: 'x402 Protocol', id: 'x402' },
+                { label: 'OpenAPI Spec', href: '/api-spec' },
+              ].map(card => (
+                <button key={card.label} onClick={() => card.id ? scrollTo(card.id) : window.open(card.href, '_blank')}
+                  style={{ padding: '10px 18px', borderRadius: '10px', border: `1px solid ${border}`, background: 'transparent', fontSize: '14px', fontWeight: 700, color: text, cursor: 'pointer', transition: 'all 0.15s' }}>
+                  {card.label} →
+                </button>
               ))}
             </div>
           </div>
 
-          <Code dark={dark}>{`# Agent hits endpoint — gets 402
-curl -v ${appUrl}/api/x402?slug=abc12345
+          {/* QUICK START */}
+          <Section id="quickstart" title="Quick Start" badge="Start Here" badgeColor="#7c3aed" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Get from zero to a live payment request in under 2 minutes. No account, no approval, no waiting.</p>
+            <Step n="1" title="Get your API key" muted={muted} text={text}>
+              <Code dark={dark}>{"curl -X POST https://paynote.space/api/keys/request \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"you@email.com\",\"use_case\":\"My project\",\"project_name\":\"My App\"}'"}</Code>
+              <p style={{ fontSize: '13px', color: muted, marginTop: '8px' }}>Returns your key immediately. Store it — it won't show again.</p>
+            </Step>
+            <Step n="2" title="Create a payment request" muted={muted} text={text}>
+              <Code dark={dark}>{"curl -X POST https://paynote.space/api/request \\\n  -H \"Authorization: Bearer pn_your_key\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"amount\":50,\"reason\":\"Invoice #003\",\"to_address\":\"0xYourWallet\",\"token\":\"USDC\"}'"}</Code>
+            </Step>
+            <Step n="3" title="Share the URL and get paid" muted={muted} text={text}>
+              <Code dark={dark}>{"// Response includes:\n{\n  \"slug\": \"k8Xm2pQn\",\n  \"url\": \"https://paynote.space/r/k8Xm2pQn\",\n  \"status\": \"pending\"\n}\n// Share the URL. Payer connects wallet, pays. Done."}</Code>
+            </Step>
+          </Section>
 
-# Response headers:
-# HTTP/1.1 402 Payment Required
-# X-Payment-Required: true
-# X-Payment-Amount: 100
-# X-Payment-Asset: 0x3600...0000
-# X-Payment-Pay-To: 0xYourAddress
-# X-Payment-Pay-URL: ${appUrl}/r/abc12345
+          {/* AUTH */}
+          <Section id="auth" title="Authentication" badge="Required" badgeColor="#1A44C4" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>All API endpoints except <Mono>/api/poll</Mono> require a bearer token. Generate one instantly — no signup, no admin contact needed.</p>
+            <Code dark={dark}>{"# Generate your key\ncurl -X POST https://paynote.space/api/keys/request \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"email\": \"you@email.com\",\n    \"project_name\": \"My Project\",\n    \"use_case\": \"Describe what you are building\"\n  }'"}</Code>
+            <Code dark={dark}>{"# Use your key on every request\nAuthorization: Bearer pn_your_api_key"}</Code>
+            <InfoBox dark={dark} color="blue">Keys are rate-limited by default. Each key starts with <strong>pn_</strong>. Contact us via Arc Discord for higher limits on production integrations.</InfoBox>
+          </Section>
 
-# Agent retries with signed authorization
-curl ${appUrl}/api/x402?slug=abc12345 \\
-  -H "X-PAYMENT: <base64-EIP-3009-authorization>"
-# Returns 200`}</Code>
-        </Section>
+          {/* CREATE */}
+          <Section id="create" title="POST /api/request" badge="Core" badgeColor="#1A44C4" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Create a payment request. Returns a shareable URL. That is all your payer needs.</p>
+            <Code dark={dark}>{"curl -X POST https://paynote.space/api/request \\\n  -H \"Authorization: Bearer pn_your_key\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"amount\": 50,\n    \"reason\": \"Freelance invoice #003\",\n    \"to_address\": \"0xYourWalletAddress\",\n    \"token\": \"USDC\",\n    \"note\": \"Thanks for the work!\",\n    \"expires_in\": 86400,\n    \"recurring\": \"monthly\",\n    \"display_name\": \"Acme Studio\"\n  }'"}</Code>
+            <Code dark={dark}>{"{\n  \"slug\": \"k8Xm2pQn\",\n  \"url\": \"https://paynote.space/r/k8Xm2pQn\",\n  \"amount\": 50,\n  \"token\": \"USDC\",\n  \"status\": \"pending\",\n  \"verified\": false,\n  \"signed_by\": null\n}"}</Code>
+            <ParamTable dark={dark} border={border} muted={muted} text={text} params={[
+              { name: 'amount', type: 'number', required: true, desc: 'Payment amount. Min 0.000001 for nanopayments.' },
+              { name: 'reason', type: 'string', required: true, desc: 'Description shown to the payer.' },
+              { name: 'to_address', type: 'string', required: true, desc: 'Your recipient wallet address (0x...).' },
+              { name: 'token', type: 'string', required: false, desc: 'USDC (default), EURC, or cirBTC.' },
+              { name: 'note', type: 'string', required: false, desc: 'Optional message shown on the pay page.' },
+              { name: 'expires_in', type: 'number', required: false, desc: 'Expiry in seconds. 86400 = 24h.' },
+              { name: 'recurring', type: 'string', required: false, desc: 'once · daily · weekly · monthly · yearly' },
+              { name: 'display_name', type: 'string', required: false, desc: 'Your name or business shown on the pay page.' },
+              { name: 'signature', type: 'string', required: false, desc: 'EIP-191 wallet signature for verified requests.' },
+            ]} />
+          </Section>
 
-        <Section id="webhooks" title="Webhooks" badge="Real-time" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            Register an HTTPS endpoint to receive payment events in real time. Every payload is HMAC-SHA256 signed. Your server reacts automatically — no polling needed.
-          </p>
-          <Code dark={dark}>{`curl -X POST ${appUrl}/api/webhooks \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "url": "https://yourserver.com/webhooks/paynote",
-    "secret": "your_signing_secret",
-    "events": ["payment.completed", "payment.created"]
-  }'`}</Code>
-          <Code dark={dark}>{`{
-  "event": "payment.completed",
-  "timestamp": "2026-06-03T10:00:00.000Z",
-  "request": {
-    "slug": "k8Xm2pQn",
-    "amount": "50.000000",
-    "token": "USDC",
-    "reason": "Freelance invoice #003",
-    "status": "completed",
-    "tx_hash": "0x...",
-    "sender_address": "0x..."
-  }
-}`}</Code>
-          <Code dark={dark}>{`const crypto = require('crypto')
+          {/* AGENT */}
+          <Section id="agent" title="POST /api/agent/pay" badge="Agentic" badgeColor="#06b6d4" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Optimised for autonomous systems. Returns a complete instruction set with all URLs an agent needs plus ERC-8183 headers on every response.</p>
+            <Code dark={dark}>{"curl -X POST https://paynote.space/api/agent/pay \\\n  -H \"Authorization: Bearer pn_your_key\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"amount\": 10,\n    \"reason\": \"Task completed - milestone 3\",\n    \"to_address\": \"0xYourWallet\",\n    \"token\": \"USDC\",\n    \"notify_url\": \"https://agentb.server/incoming-payments\"\n  }'"}</Code>
+            <Code dark={dark}>{"{\n  \"slug\": \"abc12345\",\n  \"url\": \"https://paynote.space/r/abc12345\",\n  \"erc8183\": {\n    \"version\": \"1.0\",\n    \"intent_id\": \"abc12345\",\n    \"network\": \"arc-testnet\"\n  },\n  \"instructions\": {\n    \"pay_url\": \"https://paynote.space/r/abc12345\",\n    \"poll_url\": \"https://paynote.space/api/poll?slug=abc12345\",\n    \"verify_url\": \"https://paynote.space/api/verify\",\n    \"receipt_url\": \"https://paynote.space/receipt/abc12345\",\n    \"x402_url\": \"https://paynote.space/api/x402?slug=abc12345\"\n  }\n}"}</Code>
+            <InfoBox dark={dark} color="blue">Include <strong>notify_url</strong> to have PayNote notify Agent B immediately when the request is created. Agent B receives the full payment details and x402 URL directly — no polling needed.</InfoBox>
+            <p style={{ fontSize: '13px', fontWeight: 700, color: text, marginTop: '16px', marginBottom: '8px' }}>ERC-8183 Response Headers</p>
+            <Code dark={dark}>{"X-ERC8183-Version: 1.0\nX-ERC8183-Intent-ID: abc12345\nX-ERC8183-Pay-URL: https://paynote.space/r/abc12345\nX-ERC8183-Poll-URL: https://paynote.space/api/poll?slug=abc12345\nX-ERC8183-Amount: 10\nX-ERC8183-Token: USDC\nX-ERC8183-Network: arc-testnet"}</Code>
+          </Section>
 
-app.post('/webhooks/paynote', (req, res) => {
-  const sig = req.headers['x-paynote-signature']
-  const expected = 'sha256=' + crypto
-    .createHmac('sha256', 'your_secret')
-    .update(JSON.stringify(req.body))
-    .digest('hex')
+          {/* X402 */}
+          <Section id="x402" title="GET /api/x402" badge="Agentic" badgeColor="#06b6d4" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>The x402 protocol enables agent-to-agent payment with zero human involvement. Agent B hits this endpoint, gets HTTP 402 with full payment details, signs EIP-3009 offchain, retries, gets 200.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+              {[
+                { n: '1', t: 'Agent B hits endpoint', d: 'GET /api/x402?slug=abc12345' },
+                { n: '2', t: 'Gets HTTP 402', d: 'Full payment details in response body and headers' },
+                { n: '3', t: 'Reads payment details', d: 'Amount, token address, recipient, network' },
+                { n: '4', t: 'Signs EIP-3009 offchain', d: 'Cryptographic authorization — zero gas needed' },
+                { n: '5', t: 'Retries with X-PAYMENT header', d: 'base64-encoded authorization' },
+                { n: '6', t: 'Gets HTTP 200', d: 'Payment confirmed. Access granted.' },
+              ].map(s => (
+                <div key={s.n} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                  <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: dark ? '#1e2a3a' : '#EFF6FF', color: '#1A44C4', fontSize: '11px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>{s.n}</span>
+                  <div><span style={{ fontSize: '14px', fontWeight: 700, color: text }}>{s.t} </span><span style={{ fontSize: '12px', color: muted, fontFamily: 'monospace' }}>{s.d}</span></div>
+                </div>
+              ))}
+            </div>
+            <Code dark={dark}>{"# Agent B hits endpoint — gets 402 with full body\ncurl -s https://paynote.space/api/x402?slug=abc12345\n\n# Response body:\n{\n  \"x402_version\": \"1.0\",\n  \"error\": \"Payment Required\",\n  \"accepts\": [{\n    \"token\": \"USDC\",\n    \"amount\": 10,\n    \"pay_to\": \"0xYourWallet\",\n    \"network\": \"arc-testnet\"\n  }],\n  \"instructions\": {\n    \"step1\": \"Sign EIP-3009 transferWithAuthorization\",\n    \"step2\": \"Encode as base64\",\n    \"step3\": \"Retry with X-PAYMENT header\",\n    \"step4\": \"Receive HTTP 200\"\n  }\n}"}</Code>
+          </Section>
 
-  if (expected !== sig) return res.status(401).send('Invalid')
+          {/* POLL */}
+          <Section id="poll" title="GET /api/poll" badge="Status" badgeColor="#16a34a" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Lightweight status check. No auth required. Designed for agent polling loops.</p>
+            <Code dark={dark}>{"curl https://paynote.space/api/poll?slug=k8Xm2pQn"}</Code>
+            <Code dark={dark}>{"{\n  \"status\": \"pending | completed | failed | expired\",\n  \"tx_hash\": \"0x...\",\n  \"completed_at\": \"2026-06-18T10:00:00.000Z\",\n  \"amount\": 50,\n  \"token\": \"USDC\"\n}"}</Code>
+            <InfoBox dark={dark}>Rate limited to 120 requests per minute per IP. Use <strong>sdk.waitForPayment()</strong> instead of manual polling — it handles retries and timeouts automatically.</InfoBox>
+          </Section>
 
-  const { event, request } = req.body
-  if (event === 'payment.completed') {
-    // Grant access, trigger next step, update records
-  }
-  res.sendStatus(200)
-})`}</Code>
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            {[
-              { event: 'payment.created', desc: 'New request created' },
-              { event: 'payment.completed', desc: 'Payment confirmed on Arc' },
-              { event: 'payment.failed', desc: 'Transaction reverted' },
-              { event: 'payment.expired', desc: 'Deadline passed' },
-            ].map(e => (
-              <div key={e.event} className="rounded-xl border p-3" style={{borderColor: border, background: inputBg}}>
-                <code className="text-xs font-mono font-bold" style={{color: '#1A44C4'}}>{e.event}</code>
-                <p className="text-xs mt-1 font-medium" style={{color: muted}}>{e.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
+          {/* VERIFY */}
+          <Section id="verify" title="POST /api/verify" badge="On-Chain" badgeColor="#16a34a" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Verifies a transaction directly on Arc RPC. Updates payment status. Fires webhooks. Retries automatically up to 5 times with exponential backoff on RPC timeouts.</p>
+            <Code dark={dark}>{"curl -X POST https://paynote.space/api/verify \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"slug\":\"k8Xm2pQn\",\"tx_hash\":\"0x...\"}'"}</Code>
+            <Code dark={dark}>{"{\n  \"verified\": true,\n  \"updated\": true,\n  \"block\": 46934416,\n  \"onchain_memo\": \"PayNote:k8Xm2pQn - 50 USDC\"\n}"}</Code>
+            <InfoBox dark={dark}>Idempotent — calling verify twice with the same slug and tx_hash returns <strong>idempotent: true</strong> without creating duplicate receipts.</InfoBox>
+          </Section>
 
-        <Section id="sdk" title="JavaScript SDK" badge="npm" dark={dark} border={border} text={text}>
-          <Code dark={dark}>{`npm install @egcrypt/paynote-sdk`}</Code>
-          <Code dark={dark}>{`import PayNote from '@egcrypt/paynote-sdk'
+          {/* WEBHOOKS */}
+          <Section id="webhooks" title="Webhooks" badge="Real-time" badgeColor="#d97706" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Register an HTTPS endpoint to receive payment events in real time. Every payload is HMAC-SHA256 signed. Retries automatically 5 times with exponential backoff on failure.</p>
+            <Code dark={dark}>{"# Register a webhook\ncurl -X POST https://paynote.space/api/webhooks \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"url\": \"https://yourserver.com/webhooks/paynote\",\n    \"secret\": \"your_signing_secret\",\n    \"events\": [\"payment.completed\", \"payment.created\"]\n  }'"}</Code>
+            <Code dark={dark}>{"// Payload sent to your server\n{\n  \"event\": \"payment.completed\",\n  \"timestamp\": \"2026-06-18T10:00:00.000Z\",\n  \"request\": {\n    \"slug\": \"k8Xm2pQn\",\n    \"amount\": \"50.000000\",\n    \"token\": \"USDC\",\n    \"reason\": \"Freelance invoice #003\",\n    \"status\": \"completed\",\n    \"tx_hash\": \"0x...\"\n  }\n}"}</Code>
+            <Code dark={dark}>{"// Verify the signature\nconst crypto = require('crypto')\nconst sig = req.headers['x-paynote-signature']\nconst expected = 'sha256=' + crypto\n  .createHmac('sha256', 'your_secret')\n  .update(JSON.stringify(req.body))\n  .digest('hex')\nif (expected !== sig) return res.status(401).send('Invalid')"}</Code>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
+              {[
+                { event: 'payment.created', desc: 'New request created' },
+                { event: 'payment.completed', desc: 'Confirmed on Arc' },
+                { event: 'payment.failed', desc: 'Transaction reverted' },
+                { event: 'payment.expired', desc: 'Deadline passed' },
+              ].map(e => (
+                <div key={e.event} style={{ padding: '10px 12px', borderRadius: '10px', border: `1px solid ${border}`, background: inputBg }}>
+                  <code style={{ fontSize: '12px', color: '#1A44C4', fontWeight: 700 }}>{e.event}</code>
+                  <p style={{ fontSize: '12px', color: muted, marginTop: '4px' }}>{e.desc}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
 
-const sdk = new PayNote()
+          {/* SIGNED INTENTS */}
+          <Section id="signed" title="Signed Payment Intents" badge="Trust" badgeColor="#7c3aed" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Prove a request was created by the wallet that will receive funds. The creator signs the request with their wallet — no gas, no transaction. The pay page shows a verified badge.</p>
+            <Code dark={dark}>{"// Build the message (must match exactly)\nconst message = `PayNote Payment Intent\nAmount: ${amount}\nReason: ${reason}\nRecipient: ${to_address.toLowerCase()}\nToken: ${token}`\n\n// Sign with wallet (EIP-191 personal_sign)\nconst signature = await wallet.signMessage(message)\n\n// Include in your API request\n{ ...params, signature }"}</Code>
+            <InfoBox dark={dark}>Signature is optional. Unsigned requests work exactly as before. Signed requests display a green verified badge showing the signer's address.</InfoBox>
+          </Section>
 
-const request = await sdk.createRequest({
-  amount: 50,
-  reason: 'Invoice #003',
-  toAddress: '0xYourWallet',
-  token: 'USDC',
-  expiresIn: 86400,
-})
+          {/* SDK */}
+          <Section id="sdk" title="SDKs" badge="npm" badgeColor="#dc2626" text={text} border={border}>
+            <p style={{ fontSize: '15px', fontWeight: 700, color: text, marginBottom: '8px' }}>JavaScript / TypeScript</p>
+            <Code dark={dark}>{"npm install @egcrypt/paynote-sdk"}</Code>
+            <Code dark={dark}>{"import PayNote from '@egcrypt/paynote-sdk'\n\nconst sdk = new PayNote()\n\nconst request = await sdk.createRequest({\n  amount: 50,\n  reason: 'Invoice #003',\n  toAddress: '0xYourWallet',\n  token: 'USDC',\n})\nconsole.log(request.url)\n// https://paynote.space/r/abc12345\n\n// Block until paid\nconst result = await sdk.waitForPayment(request.slug)\nconsole.log(result.txHash)"}</Code>
+            <p style={{ fontSize: '15px', fontWeight: 700, color: text, marginBottom: '8px', marginTop: '20px' }}>Python</p>
+            <Code dark={dark}>{"pip install requests"}</Code>
+            <Code dark={dark}>{"from paynote import PayNote\n\nsdk = PayNote()\n\n# Get API key\nkey_data = sdk.get_api_key('you@email.com', 'My project')\napi_key = key_data['key']\n\n# Create request\nrequest = sdk.create_request(\n    api_key=api_key,\n    amount=50.0,\n    reason='Invoice #003',\n    to_address='0xYourWallet',\n    token='USDC',\n)\nprint(request['url'])\n\n# Wait for payment\nresult = sdk.wait_for_payment(request['slug'])\nprint(result['tx_hash'])"}</Code>
+          </Section>
 
-console.log(request.url)
-// ${appUrl}/r/abc12345
+          {/* WIDGET */}
+          <Section id="widget" title="Embeddable Widget" badge="Embed" badgeColor="#64748b" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Add a live payment request to any website. One script tag. The payer never leaves your page.</p>
+            <Code dark={dark}>{"<script src=\"https://paynote.space/widget.js\"></script>\n<paynote-request id=\"k8Xm2pQn\"></paynote-request>\n\n<!-- Or direct iframe -->\n<iframe\n  src=\"https://paynote.space/widget/k8Xm2pQn\"\n  style=\"border:none;width:360px;height:220px;border-radius:16px\"\n></iframe>"}</Code>
+          </Section>
 
-// Poll once
-const status = await sdk.getStatus(request.slug)
+          {/* AGENT WALLETS */}
+          <Section id="agent-wallets" title="Agent Wallets (Turnkey)" badge="Agentic" badgeColor="#06b6d4" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>PayNote's x402 endpoint requires an EIP-3009 signature from the payer. For AI agents, that signature should come from a programmatically controlled wallet — not a human-held seed phrase.</p>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>We're aligning with Arc's Turnkey integration for dev-controlled wallets. An agent's wallet is provisioned via Turnkey with scoped signing permissions.</p>
+            <Code dark={dark}>{"// Agent wallet flow (Turnkey + PayNote)\n1. Provision agent wallet via Turnkey\n   (scoped policy: max 50 USDC/day, only to PayNote x402 endpoints)\n\n2. Agent calls POST /api/agent/pay\n   Gets back: { x402_url, poll_url, receipt_url }\n\n3. Agent requests EIP-3009 signature from Turnkey\n   (Turnkey enforces spend limits before signing)\n\n4. Agent hits x402_url with X-PAYMENT header\n\n5. PayNote verifies signature + settles on Arc"}</Code>
+            <InfoBox dark={dark}>Turnkey integration is on our active roadmap. If you are building agent wallets on Arc with Turnkey, reach out — we want to test this together.</InfoBox>
+          </Section>
 
-// Block until paid (automatic polling)
-const result = await sdk.waitForPayment(request.slug, {
-  timeoutMs: 300000,
-})
-console.log(result.txHash)`}</Code>
-        </Section>
+          {/* ARC V0.7.2 */}
+          <Section id="arc-v072" title="Arc v0.7.2 — Transaction Extensions" badge="New" badgeColor="#7c3aed" text={text} border={border}>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>Arc Testnet upgraded to v0.7.2 on June 18, 2026. PayNote ships day-one support for both new features.</p>
+            <p style={{ fontSize: '15px', fontWeight: 700, color: text, marginBottom: '8px' }}>Transaction Memos</p>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '12px' }}>Payment reasons now attach directly to the transaction onchain. Receipts are fully verifiable on ArcScan without trusting PayNote's database — the blockchain records not just the amount and addresses, but why the money moved.</p>
+            <Code dark={dark}>{"// Memo contract (Arc v0.7.2)\n0x9702000000000000000000000000000000000000\n\n// PayNote attaches memo automatically on every payment\n// Format: \"PayNote:{slug} - {amount} {token}\""}</Code>
+            <p style={{ fontSize: '15px', fontWeight: 700, color: text, marginBottom: '8px', marginTop: '20px' }}>Batch Transactions (Multicall3From)</p>
+            <p style={{ color: muted, lineHeight: 1.7, marginBottom: '12px' }}>Multiple calls execute in one transaction. Approve + transfer now happens in a single confirmation instead of two. Dramatically simpler payer UX.</p>
+            <Code dark={dark}>{"// Multicall3From contract (Arc v0.7.2)\n0xEb7c000000000000000000000000000000000000\n\n// Batches subcalls while retaining original msg.sender\n// Enables approve + transfer in one transaction"}</Code>
+          </Section>
 
-        <Section id="widget" title="Embeddable Widget" badge="Embed" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            Add a live payment request to any website. One script tag. Your payer never has to leave your page.
-          </p>
-          <Code dark={dark}>{`<script src="${appUrl}/widget.js"></script>
-<paynote-request id="k8Xm2pQn"></paynote-request>
-
-<!-- Or direct iframe -->
-<iframe
-  src="${appUrl}/widget/k8Xm2pQn"
-  style="border:none;width:360px;height:220px;border-radius:16px"
-></iframe>`}</Code>
-        </Section>
-
-        <Section id="contracts" title="Deployed Contracts" badge="On-Chain" dark={dark} border={border} text={text}>
-          <div className="flex flex-col gap-3">
+          {/* CONTRACTS */}
+          <Section id="contracts" title="Deployed Contracts" badge="On-Chain" badgeColor="#16a34a" text={text} border={border}>
             {[
               { name: 'PayNoteRouter', addr: '0x829fe116E221d14Db289623028c5AC6b2F30BD82', desc: 'Native USDC transfers' },
-              { name: 'PayNoteRouterV2', addr: '0xc7190DBb23861b7dB15eED4326eBa33B0eeacEa4', desc: 'ERC-20 multi-asset · Token whitelist · Split payments' },
+              { name: 'PayNoteRouterV2', addr: '0xc7190DBb23861b7dB15eED4326eBa33B0eeacEa4', desc: 'ERC-20 multi-asset, split payments, token whitelist' },
             ].map(c => (
-              <div key={c.name} className="rounded-2xl border p-5" style={{borderColor: border, background: inputBg}}>
-                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                  <span className="font-black text-base" style={{color: text}}>{c.name}</span>
-                  <a href={`https://testnet.arcscan.app/address/${c.addr}`} target="_blank" rel="noopener noreferrer"
-                    className="text-xs font-bold hover:opacity-70 transition-opacity" style={{color: '#1A44C4'}}>
-                    View on ArcScan →
-                  </a>
+              <div key={c.name} style={{ padding: '16px', borderRadius: '12px', border: `1px solid ${border}`, background: inputBg, marginBottom: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontWeight: 900, fontSize: '15px', color: text }}>{c.name}</span>
+                  <a href={`https://testnet.arcscan.app/address/${c.addr}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', fontWeight: 700, color: '#1A44C4', textDecoration: 'none' }}>View on ArcScan →</a>
                 </div>
-                <code className="text-xs font-mono block mb-2" style={{color: muted}}>{c.addr}</code>
-                <p className="text-xs font-medium" style={{color: muted}}>{c.desc}</p>
+                <code style={{ fontSize: '12px', color: muted, display: 'block', marginBottom: '4px' }}>{c.addr}</code>
+                <p style={{ fontSize: '12px', color: muted }}>{c.desc}</p>
               </div>
             ))}
-          </div>
-        </Section>
+            <p style={{ fontSize: '13px', fontWeight: 700, color: text, marginTop: '16px', marginBottom: '8px' }}>Arc v0.7.2 Extensions</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {[
+                { name: 'Memo', addr: '0x9702...0000' },
+                { name: 'Multicall3From', addr: '0xEb7c...0000' },
+                { name: 'Multicall3', addr: '0xcA11...CA11' },
+                { name: 'Permit2', addr: '0x0000...BA3' },
+              ].map(c => (
+                <div key={c.name} style={{ padding: '10px 12px', borderRadius: '10px', border: `1px solid ${border}`, background: inputBg }}>
+                  <p style={{ fontSize: '13px', fontWeight: 700, color: text }}>{c.name}</p>
+                  <code style={{ fontSize: '11px', color: muted }}>{c.addr}</code>
+                </div>
+              ))}
+            </div>
+          </Section>
 
-
-
-        <Section id="signed-requests" title="Signed Payment Intents" badge="Trust" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            Anyone can technically create a PayNote request pointing to any wallet address. To prove a request was actually authorized by the wallet that will receive funds, the creator can sign the request with their wallet — no gas, no transaction, just a signature.
-          </p>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            The pay page shows "Verified request — signed by 0x..." when a valid signature is included. Payers can trust the request came from the claimed recipient without trusting PayNote's database alone.
-          </p>
-          <Code dark={dark}>{`// 1. Build the intent message (must match exactly)
-const message = \`PayNote Payment Intent
-Amount: \${amount}
-Reason: \${reason}
-Recipient: \${to_address.toLowerCase()}
-Token: \${token}\`
-
-// 2. Sign with your wallet (EIP-191 personal_sign — free, instant)
-const signature = await wallet.signMessage(message)
-
-// 3. Include the signature when creating the request
-curl -X POST /api/request \
-  -H "Authorization: Bearer pn_your_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "amount": 50,
-    "reason": "Invoice #003",
-    "to_address": "0xYourWallet",
-    "token": "USDC",
-    "signature": "0x..."
-  }'`}</Code>
-          <InfoBox dark={dark} color="blue">
-            Signature is optional. Unsigned requests work exactly as before. Signed requests get a verified badge on the pay page — useful for businesses and recurring requesters who want payers to trust the source.
-          </InfoBox>
-        </Section>
-
-        <Section id="agent-wallets" title="Agent Wallets (Turnkey-compatible)" badge="Agentic" dark={dark} border={border} text={text}>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            PayNote's x402 endpoint requires an EIP-3009 signature from the payer. For AI agents, that signature should come from a wallet the agent controls programmatically — not a human-held seed phrase.
-          </p>
-          <p className="text-base mb-4 font-medium" style={{color: muted}}>
-            We're aligning with Arc's Turnkey integration for dev-controlled wallets. An agent's wallet is provisioned via Turnkey, signing permissions are scoped (e.g. max 50 USDC per day, only to whitelisted PayNote x402 endpoints), and the agent signs EIP-3009 authorizations without ever holding raw private keys.
-          </p>
-          <Code dark={dark}>{`// Agent wallet flow (Turnkey + PayNote)
-1. Provision agent wallet via Turnkey (scoped signing policy)
-2. Agent calls POST /api/agent/pay -> gets x402_url
-3. Agent requests EIP-3009 signature from Turnkey
-   (Turnkey enforces: max amount, allowed recipients, allowed tokens)
-4. Agent retries x402_url with X-PAYMENT header
-5. PayNote verifies signature + settles on Arc`}</Code>
-          <InfoBox dark={dark} color="blue">
-            This is on our active roadmap. Status: aligning with Arc's Turnkey partnership announced by Tim Baker. If you're building agent wallets on Turnkey, reach out — we'd like to test this integration together.
-          </InfoBox>
-        </Section>
-
-        <Section id="tokens" title="Supported Tokens" badge="Assets" dark={dark} border={border} text={text}>
-          <div className="rounded-2xl border overflow-hidden" style={{borderColor: border}}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{background: inputBg}}>
-                  {['Token', 'Contract', 'Decimals', 'Status'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest" style={{color: muted}}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { token: 'USDC', addr: '0x3600...0000', dec: '6', status: 'Live', color: '#16a34a' },
-                  { token: 'EURC', addr: '0x89B5...72a', dec: '6', status: 'Live', color: '#16a34a' },
-                  { token: 'cirBTC', addr: '0xf0C4...32BF', dec: '8', status: 'Live', color: '#16a34a' },
-                  { token: 'USYC', addr: '0xe918...86C', dec: '6', status: 'Allowlist', color: '#d97706' },
-                  { token: 'QCAD', addr: 'Pending', dec: '6', status: 'Soon', color: '#64748b' },
-                ].map((row, i) => (
-                  <tr key={row.token} style={{background: i % 2 === 0 ? card : inputBg}}>
-                    <td className="px-4 py-3 font-black" style={{color: text}}>{row.token}</td>
-                    <td className="px-4 py-3 font-mono text-xs" style={{color: muted}}>{row.addr}</td>
-                    <td className="px-4 py-3 font-mono font-semibold" style={{color: muted}}>{row.dec}</td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-bold px-2 py-1 rounded-full" style={{color: row.color, background: row.color + '20'}}>{row.status}</span>
-                    </td>
+          {/* TOKENS */}
+          <Section id="tokens" title="Supported Tokens" badge="Assets" badgeColor="#1A44C4" text={text} border={border}>
+            <div style={{ borderRadius: '12px', border: `1px solid ${border}`, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                <thead>
+                  <tr style={{ background: dark ? '#1e2a3a' : '#f1f5f9' }}>
+                    {['Token', 'Contract', 'Decimals', 'Status'].map(h => (
+                      <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', color: muted }}>{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Section>
+                </thead>
+                <tbody>
+                  {[
+                    { token: 'USDC', addr: '0x3600...0000', dec: '6', status: 'Live', color: '#16a34a' },
+                    { token: 'EURC', addr: '0x89B5...72a', dec: '6', status: 'Live', color: '#16a34a' },
+                    { token: 'cirBTC', addr: '0xf0C4...32BF', dec: '8', status: 'Live', color: '#16a34a' },
+                    { token: 'USYC', addr: '0xe918...86C', dec: '6', status: 'Allowlist', color: '#d97706' },
+                    { token: 'QCAD', addr: 'Pending', dec: '6', status: 'Soon', color: '#64748b' },
+                  ].map((row, i) => (
+                    <tr key={row.token} style={{ background: i % 2 === 0 ? card : inputBg }}>
+                      <td style={{ padding: '10px 14px', fontWeight: 900, color: text }}>{row.token}</td>
+                      <td style={{ padding: '10px 14px', fontFamily: 'monospace', fontSize: '12px', color: muted }}>{row.addr}</td>
+                      <td style={{ padding: '10px 14px', fontFamily: 'monospace', color: muted }}>{row.dec}</td>
+                      <td style={{ padding: '10px 14px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: row.color, background: row.color + '20', padding: '2px 8px', borderRadius: '20px' }}>{row.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Section>
 
+          <div style={{ height: '80px' }} />
+        </main>
       </div>
 
-      <footer className="py-6 border-t mt-12" style={{borderColor: border, background: card}}>
-        <div className="max-w-4xl mx-auto px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-sm font-semibold" style={{color: muted}}>
-            PayNote API v1.0 · Powered by <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-black hover:opacity-70" style={{color: '#1A44C4'}}>Arc</a>
-          </p>
-          <div className="flex items-center gap-4">
-            <a href="https://www.npmjs.com/package/@egcrypt/paynote-sdk" target="_blank" rel="noopener noreferrer" className="text-xs font-bold hover:opacity-70" style={{color: muted}}>npm SDK</a>
-            <a href="/" className="text-xs font-bold hover:opacity-70" style={{color: muted}}>App</a>
-          </div>
-        </div>
-      </footer>
+      <style>{`
+        @media (max-width: 768px) {
+          .mobile-menu-btn { display: flex !important; }
+          aside { display: ${mobileNav ? 'block' : 'none'}; position: fixed; top: 60px; left: 0; right: 0; height: auto; z-index: 40; border-right: none; border-bottom: 1px solid ${border}; }
+          main { padding: 24px 20px !important; }
+        }
+        button:hover { opacity: 0.8; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        pre { white-space: pre-wrap; word-break: break-all; }
+      `}</style>
     </div>
   )
 }
 
-function Section({ id, title, badge, children, dark, border, text }: { id: string; title: string; badge: string; children: React.ReactNode; dark: boolean; border: string; text: string }) {
-  const badgeColors: Record<string, { bg: string; color: string }> = {
-    'Start Here': { bg: '#7c3aed20', color: '#7c3aed' },
-    Core: { bg: '#1A44C420', color: '#1A44C4' },
-    Agentic: { bg: '#06b6d420', color: '#06b6d4' },
-    Status: { bg: '#16a34a20', color: '#16a34a' },
-    'Real-time': { bg: '#d9770620', color: '#d97706' },
-    npm: { bg: '#dc262620', color: '#dc2626' },
-    Embed: { bg: '#47556920', color: '#64748b' },
-    Assets: { bg: '#1A44C420', color: '#1A44C4' },
-    'On-Chain': { bg: '#16a34a20', color: '#16a34a' },
-  }
-  const bc = badgeColors[badge] || { bg: '#1e2a3a', color: '#475569' }
-
+function Section({ id, title, badge, badgeColor, children, text, border }: { id: string; title: string; badge: string; badgeColor: string; children: React.ReactNode; text: string; border: string }) {
   return (
-    <div id={id} className="mb-16 scroll-mt-24">
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b" style={{borderColor: border}}>
-        <h2 className="text-xl sm:text-2xl font-black" style={{color: text}}>{title}</h2>
-        <span className="text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-widest" style={{background: bc.bg, color: bc.color}}>{badge}</span>
+    <div id={id} style={{ marginBottom: '64px', scrollMarginTop: '80px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '16px', borderBottom: `1px solid ${border}` }}>
+        <h2 style={{ fontSize: '22px', fontWeight: 900, color: text }}>{title}</h2>
+        <span style={{ fontSize: '11px', fontWeight: 900, color: badgeColor, background: badgeColor + '18', padding: '3px 10px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{badge}</span>
       </div>
       {children}
     </div>
   )
 }
 
+function Step({ n, title, children, muted, text }: { n: string; title: string; children: React.ReactNode; muted: string; text: string }) {
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+        <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#1A44C4', color: '#fff', fontSize: '12px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{n}</span>
+        <span style={{ fontSize: '15px', fontWeight: 700, color: text }}>{title}</span>
+      </div>
+      <div style={{ marginLeft: '34px' }}>{children}</div>
+    </div>
+  )
+}
+
 function Code({ children, dark }: { children: string; dark: boolean }) {
   return (
-    <div className="rounded-2xl overflow-hidden mb-4" style={{background: '#0d1117', border: '1px solid #1e2a3a'}}>
-      <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{borderColor: '#1e2a3a'}}>
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500 opacity-60"/>
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500 opacity-60"/>
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500 opacity-60"/>
-        </div>
+    <div style={{ borderRadius: '12px', overflow: 'hidden', marginBottom: '12px', border: '1px solid #1e2a3a' }}>
+      <div style={{ display: 'flex', gap: '6px', padding: '10px 16px', borderBottom: '1px solid #1e2a3a', background: '#0d1117' }}>
+        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', opacity: 0.6 }} />
+        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#eab308', opacity: 0.6 }} />
+        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e', opacity: 0.6 }} />
       </div>
-      <pre className="text-sm font-mono leading-relaxed overflow-x-auto p-5" style={{color: '#94a3b8'}}>{children}</pre>
+      <pre style={{ background: '#0d1117', color: '#94a3b8', padding: '16px', fontSize: '13px', fontFamily: 'monospace', lineHeight: 1.6, overflowX: 'auto' }}>{children}</pre>
     </div>
   )
 }
 
 function InfoBox({ children, dark, color = 'slate' }: { children: React.ReactNode; dark: boolean; color?: string }) {
-  const c = color === 'blue'
-    ? { bg: '#1A44C410', border: '#1A44C430', text: '#64748b', icon: '#1A44C4' }
-    : { bg: dark ? '#1e2a3a40' : '#f1f5f980', border: dark ? '#1e2a3a' : '#e2e8f0', text: '#64748b', icon: '#475569' }
+  const isBlue = color === 'blue'
   return (
-    <div className="rounded-xl p-4 mb-4 flex gap-3" style={{background: c.bg, border: `1px solid ${c.border}`}}>
-      <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: c.icon}}>
+    <div style={{ display: 'flex', gap: '10px', padding: '12px 14px', borderRadius: '10px', background: isBlue ? '#1A44C418' : (dark ? '#1e2a3a40' : '#f1f5f980'), border: `1px solid ${isBlue ? '#1A44C430' : (dark ? '#1e2a3a' : '#e2e8f0')}`, marginBottom: '12px', marginTop: '4px' }}>
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: isBlue ? '#1A44C4' : '#64748b', flexShrink: 0, marginTop: '1px' }}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
-      <p className="text-sm font-medium" style={{color: c.text}}>{children}</p>
+      <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.6 }}>{children}</p>
     </div>
   )
 }
 
-function ParamTable({ params, dark, border, muted }: { params: { name: string; type: string; required: boolean; desc: string }[]; dark: boolean; border: string; muted: string }) {
-  const card = dark ? '#111827' : '#ffffff'
-  const inputBg = dark ? '#0d1321' : '#f8fafc'
-  const text = dark ? '#f1f5f9' : '#0f172a'
+function Mono({ children }: { children: string }) {
+  return <code style={{ fontFamily: 'monospace', fontSize: '13px', color: '#1A44C4', background: '#EFF6FF', padding: '1px 6px', borderRadius: '4px' }}>{children}</code>
+}
+
+function ParamTable({ params, dark, border, muted, text }: { params: { name: string; type: string; required: boolean; desc: string }[]; dark: boolean; border: string; muted: string; text: string }) {
   return (
-    <div className="rounded-2xl border overflow-hidden mt-4" style={{borderColor: border}}>
-      <table className="w-full text-sm">
+    <div style={{ borderRadius: '12px', border: `1px solid ${border}`, overflow: 'hidden', marginTop: '16px' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
         <thead>
-          <tr style={{background: inputBg}}>
+          <tr style={{ background: dark ? '#1e2a3a' : '#f1f5f9' }}>
             {['Parameter', 'Type', 'Required', 'Description'].map(h => (
-              <th key={h} className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest" style={{color: muted}}>{h}</th>
+              <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', color: muted }}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {params.map((p, i) => (
-            <tr key={p.name} style={{background: i % 2 === 0 ? card : inputBg}}>
-              <td className="px-4 py-3 font-mono font-bold text-xs" style={{color: '#1A44C4'}}>{p.name}</td>
-              <td className="px-4 py-3 font-mono text-xs" style={{color: muted}}>{p.type}</td>
-              <td className="px-4 py-3">
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{background: p.required ? '#1A44C420' : dark ? '#1e2a3a' : '#f1f5f9', color: p.required ? '#1A44C4' : muted}}>{p.required ? 'Required' : 'Optional'}</span>
+            <tr key={p.name} style={{ background: i % 2 === 0 ? (dark ? '#111827' : '#ffffff') : (dark ? '#0d1321' : '#f8fafc') }}>
+              <td style={{ padding: '9px 12px', fontFamily: 'monospace', fontWeight: 700, color: '#1A44C4', fontSize: '12px' }}>{p.name}</td>
+              <td style={{ padding: '9px 12px', fontFamily: 'monospace', color: muted, fontSize: '12px' }}>{p.type}</td>
+              <td style={{ padding: '9px 12px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: p.required ? '#1A44C4' : muted, background: p.required ? '#1A44C420' : (dark ? '#1e2a3a' : '#f1f5f9'), padding: '2px 8px', borderRadius: '20px' }}>{p.required ? 'Required' : 'Optional'}</span>
               </td>
-              <td className="px-4 py-3 text-xs font-medium" style={{color: muted}}>{p.desc}</td>
+              <td style={{ padding: '9px 12px', color: muted }}>{p.desc}</td>
             </tr>
           ))}
         </tbody>

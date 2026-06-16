@@ -69,10 +69,32 @@ export async function POST(req: NextRequest) {
       dispatchWebhooks('payment.completed', result.rows[0]).catch(console.error)
     }
 
+    const blockNum = parseInt(receipt['blockNumber'], 16)
+
+    // Try to read memo from the transaction (Arc v0.7.2+)
+    let onchainMemo: string | null = null
+    try {
+      const txRes = await fetch('https://rpc.testnet.arc.network', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_getTransactionByHash', params: [tx_hash], id: 1 }),
+        signal: AbortSignal.timeout(5000),
+      })
+      const txData = await txRes.json()
+      if (txData.result?.input && txData.result.input !== '0x') {
+        // Attempt to decode memo from input data
+        const hex = txData.result.input.slice(2)
+        try {
+          onchainMemo = Buffer.from(hex, 'hex').toString('utf8').replace(/[^ -~]/g, '').trim() || null
+        } catch { onchainMemo = null }
+      }
+    } catch { /* memo read is best-effort */ }
+
     return NextResponse.json({
       verified: true,
       updated: result.rows.length > 0,
-      block: parseInt(receipt['blockNumber'], 16),
+      block: blockNum,
+      onchain_memo: onchainMemo,
     })
 
   } catch (err) {
