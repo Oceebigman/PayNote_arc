@@ -14,6 +14,15 @@ interface Props {
 
 const ARC_CHAIN_IDS = ['0x4ce752', '0x4cef52']
 
+// Chains where Circle Forwarding Service can bridge USDC to Arc
+const FORWARDING_CHAINS: Record<string, string> = {
+  '0x1':     'Ethereum',
+  '0x2105':  'Base',
+  '0x89':    'Polygon',
+  '0xa4b1':  'Arbitrum',
+  '0xa':     'Optimism',
+}
+
 // Arc v0.7.2 batch transaction contract
 // Allows approve + transfer in ONE transaction instead of two
 const MULTICALL3FROM = '0xEb7c000000000000000000000000000000000000'
@@ -96,8 +105,14 @@ export default function PayButton({ amount, toAddress, token, tokenAddress, toke
 
       const currentChain = await ethereum.request({ method: 'eth_chainId' }) as string
       if (!ARC_CHAIN_IDS.includes(currentChain.toLowerCase())) {
-        setStatus('error')
-        setErrorMsg('Please switch to Arc Testnet. Use Rabby wallet for best compatibility.')
+        const chainName = FORWARDING_CHAINS[currentChain.toLowerCase()]
+        if (chainName) {
+          setStatus('error')
+          setErrorMsg(`You are on ${chainName}. Switch to Arc Testnet to pay directly, or use Circle Forwarding Service to pay from ${chainName} — Circle bridges your USDC to Arc automatically.`)
+        } else {
+          setStatus('error')
+          setErrorMsg('Please switch to Arc Testnet. Use Rabby wallet for best compatibility.')
+        }
         return
       }
 
