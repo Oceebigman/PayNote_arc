@@ -11,6 +11,7 @@ const PAGES = [
   { href: '/api-spec', label: 'OpenAPI Spec', desc: 'Machine-readable API spec' },
   { href: '/history', label: 'History', desc: 'All payment requests' },
   { href: '/admin', label: 'Admin', desc: 'Dashboard — private' },
+  { href: '/support', label: 'Support', desc: 'Get help from Penny' },
 ]
 
 export default function SiteNav() {

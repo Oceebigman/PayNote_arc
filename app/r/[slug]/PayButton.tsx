@@ -145,19 +145,13 @@ export default function PayButton({ amount, toAddress, token, tokenAddress, toke
       setTxHash(hash)
       setStatus('success')
 
-      // Arc v0.7.2 — attach payment reason as onchain memo (best-effort)
-      try {
-        const memoText = `PayNote:${slug || 'payment'} — ${amount} ${token}`
-        await ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from,
-            to: '0x9702000000000000000000000000000000000000',
-            data: encodeMemo(memoText),
-            value: '0x0',
-          }],
-        })
-      } catch { /* memo is best-effort, never block payment */ }
+      // Arc v0.7.2 Memo integration DISABLED pending correct ABI.
+      // See audit v1.1 section 9 issue #1 — real Memo contract is at
+      // 0x5294E9927c3306DcBaDb03fe70b92e01cCede505 with signature
+      // memo(address,bytes,bytes32,bytes), not memo(bytes). Previous code
+      // sent tx to 0x9702... (not deployed) with selector 0x5a1db8df
+      // (wrong function). Fix requires architectural rewrite + testnet
+      // verification. Direct USDC transfer above still works.
 
       if (slug) {
         await new Promise(r => setTimeout(r, 2000))

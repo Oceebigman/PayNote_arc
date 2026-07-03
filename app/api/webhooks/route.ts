@@ -33,6 +33,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const adminSecret = process.env.ADMIN_SECRET
+  const auth = req.headers.get('x-admin-secret')
+  if (auth !== adminSecret) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
     const { id } = await req.json()
     if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })

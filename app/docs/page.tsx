@@ -339,7 +339,7 @@ export default function DocsPage() {
             <p style={{ color: muted, lineHeight: 1.7, marginBottom: '16px' }}>PayNote requests settle on Arc. But payers may hold USDC on Ethereum, Base, Polygon, Arbitrum, or Optimism. Circle Forwarding Service bridges the gap automatically — no manual bridging, no destination chain gas handling.</p>
             <p style={{ fontSize: '15px', fontWeight: 700, color: text, marginBottom: '8px' }}>Circle Forwarding Service</p>
             <p style={{ color: muted, lineHeight: 1.7, marginBottom: '12px' }}>A payer with USDC on Ethereum can pay a PayNote request on Arc. Circle handles the bridge, minting on Arc, and delivery. One query parameter enables the whole flow.</p>
-            <Code dark={dark}>{"// Circle Forwarding Service
+            <Code dark={dark}>{`// Circle Forwarding Service
 // Source: payer has USDC on Ethereum
 // Destination: PayNote request on Arc
 
@@ -354,7 +354,7 @@ GET https://gateway.circle.com/forward?
 // - Bridge from Ethereum to Arc
 // - Mint USDC on Arc
 // - Deliver to recipient
-// - Zero destination chain gas for payer"}</Code>
+// - Zero destination chain gas for payer`}</Code>
             <p style={{ fontSize: '15px', fontWeight: 700, color: text, marginBottom: '8px', marginTop: '20px' }}>Uniswap on Arc (Coming)</p>
             <p style={{ color: muted, lineHeight: 1.7, marginBottom: '12px' }}>Uniswap is coming to Arc Mainnet. When live, PayNote will integrate swap paths — a payer with EURC can pay a USDC request, Uniswap handles the swap on Arc. One payment intent, any supported token.</p>
             <InfoBox dark={dark} color="blue">Cross-chain payment support is on the PayNote mainnet roadmap. Circle Forwarding is available now for manual integration. The PayNote pay page already detects when a payer is on a non-Arc chain and shows forwarding guidance.</InfoBox>

@@ -6,3 +6,12 @@ node_modules/
 *.env
 deploy.sh
 ecosystem.config.js
+
+# audit / backup files created during recovery sessions
+*.audit-backup
+*.backup
+.env.local.backup
+
+# nano backup files
+*.save
+*.save.*
