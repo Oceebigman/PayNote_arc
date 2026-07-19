@@ -327,7 +327,7 @@ export default function Home() {
       <footer className="py-5 border-t relative z-10" style={{borderColor:'var(--border)',background:'var(--nav-bg)',backdropFilter:'blur(12px)'}}>
         <div className="max-w-6xl mx-auto px-5 sm:px-12 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-sm font-semibold" style={{color:'var(--muted)'}}>
-            PayNote · Powered by <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-black hover:opacity-70" style={{color:'#1A44C4'}}>Arc</a>
+            PayNote · Built on <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-black hover:opacity-70" style={{color:'#1A44C4'}}>Arc</a>
           </p>
           <div className="flex items-center gap-5">
             <a href="/templates" className="text-sm font-semibold hover:opacity-70" style={{color:'var(--muted)'}}>{t(lang,'nav_templates')}</a>

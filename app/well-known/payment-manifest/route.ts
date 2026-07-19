@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   return NextResponse.json({
     name: 'PayNote',
-    description: 'Non-custodial payment coordination infrastructure on Arc Network',
+    description: 'Non-custodial payment coordination infrastructure, built on Arc Network',
     version: '1.0.0',
     network: 'arc-testnet',
     protocol: 'x402',

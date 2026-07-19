@@ -166,7 +166,7 @@ export default function DocsPage() {
               Live on Arc Testnet
             </div>
             <h1 style={{ fontSize: '40px', fontWeight: 900, color: text, marginBottom: '12px', lineHeight: 1.1 }}>PayNote API</h1>
-            <p style={{ fontSize: '18px', color: muted, lineHeight: 1.6, marginBottom: '24px' }}>Payment coordination infrastructure on Arc. Non-custodial. Agent-ready. One API call.</p>
+            <p style={{ fontSize: '18px', color: muted, lineHeight: 1.6, marginBottom: '24px' }}>Payment coordination infrastructure, built on Arc. Non-custodial. Agent-ready. One API call.</p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {[
                 { label: 'Quick Start', id: 'quickstart' },

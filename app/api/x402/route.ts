@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
+import { SUPPORTED_TOKENS, PUBLIC_TOKENS } from '@/lib/arcContracts'
 
-const TOKEN_ADDRESSES: Record<string, string> = {
-  USDC:   '0x3600000000000000000000000000000000000000',
-  EURC:   '0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a',
-  cirBTC: '0xf0C4a4CE82A5746AbAAd9425360Ab04fbBA432BF',
-}
 
 export async function GET(req: NextRequest) {
   const slug = req.nextUrl.searchParams.get('slug')
@@ -25,7 +21,20 @@ export async function GET(req: NextRequest) {
   const req2 = result.rows[0]
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paynote.space'
   const token = req2.token || 'USDC'
-  const tokenAddress = TOKEN_ADDRESSES[token] || TOKEN_ADDRESSES.USDC
+
+  // Token resolution: prefer the real address from SUPPORTED_TOKENS.
+  // If the token isn't in the registry at all, fall back to USDC with a warning.
+  // If the token is in the registry but not in PUBLIC_TOKENS (e.g. USYC),
+  // we still serve the real address but attach a warning about the allowlist.
+  const registered = SUPPORTED_TOKENS[token]
+  const tokenAddress = registered ? registered.address : SUPPORTED_TOKENS.USDC.address
+
+  let tokenWarning: string | null = null
+  if (!registered) {
+    tokenWarning = `Token '${token}' is not in the PayNote registry. Returning USDC address as fallback. Payer should verify token_address before signing.`
+  } else if (!(PUBLIC_TOKENS as readonly string[]).includes(token)) {
+    tokenWarning = `Token '${token}' requires Circle allowlist approval. Payer wallet must be on the allowlist to complete the transfer.`
+  }
 
   if (req2.status === 'completed') {
     return NextResponse.json({
@@ -44,6 +53,7 @@ export async function GET(req: NextRequest) {
   const body = {
     x402_version: '1.0',
     error: 'Payment Required',
+    token_warning: tokenWarning,
     accepts: [
       {
         scheme: 'exact',

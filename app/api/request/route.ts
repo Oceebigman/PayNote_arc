@@ -4,8 +4,9 @@ import { nanoid } from 'nanoid'
 import { ERRORS } from '@/lib/errors'
 import { rateLimit } from '@/lib/rateLimit'
 import { verifyIntentSignature } from '@/lib/signature'
+import { SUPPORTED_TOKENS } from '@/lib/arcContracts'
 
-const VALID_TOKENS = ['USDC', 'EURC', 'cirBTC', 'USYC', 'QCAD']
+const VALID_TOKENS = Object.keys(SUPPORTED_TOKENS)
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/
 
 export async function POST(req: NextRequest) {

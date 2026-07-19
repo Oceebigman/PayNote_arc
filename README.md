@@ -1,6 +1,6 @@
 # PayNote
 
-**Non-custodial payment coordination infrastructure on Arc Network.**
+**Non-custodial payment coordination infrastructure, built on Arc Network.**
 
 Live at [paynote.space](https://paynote.space) | [Docs](https://paynote.space/docs) | [API Spec](https://paynote.space/api-spec)
 

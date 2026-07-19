@@ -6,7 +6,7 @@ export async function GET() {
     info: {
       title: 'PayNote API',
       version: '1.0.0',
-      description: 'Payment coordination infrastructure on Arc Network. Non-custodial USDC payment requests, verification, and webhooks.',
+      description: 'Payment coordination infrastructure, built on Arc Network. Non-custodial USDC payment requests, verification, and webhooks.',
       contact: { url: 'https://paynote.space', email: 'ikeocee@gmail.com' },
       license: { name: 'MIT' },
     },

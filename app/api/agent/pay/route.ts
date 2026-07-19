@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid'
 import { validateApiKey } from '@/lib/apiAuth'
 import { dispatchWebhooks } from '@/lib/webhooks'
 import { verifyIntentSignature } from '@/lib/signature'
+import { SUPPORTED_TOKENS } from '@/lib/arcContracts'
 
 export async function POST(req: NextRequest) {
   const valid = await validateApiKey(req)
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
       }, { status: 400 })
     }
 
-    const validTokens = ['USDC', 'EURC', 'cirBTC', 'USYC']
+    const validTokens = Object.keys(SUPPORTED_TOKENS)
     const selectedToken = validTokens.includes(token) ? token : 'USDC'
     const slug = nanoid(8)
     const expiresAt = expires_in ? new Date(Date.now() + expires_in * 1000).toISOString() : null

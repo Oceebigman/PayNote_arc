@@ -162,7 +162,7 @@ console.log(request.url)
 
       <footer className="py-6 border-t mt-12" style={{borderColor: border, background: card}}>
         <p className="text-center text-sm font-semibold" style={{color: muted}}>
-          PayNote · Powered by <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-black hover:opacity-70" style={{color: '#1A44C4'}}>Arc</a>
+          PayNote · Built on <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-black hover:opacity-70" style={{color: '#1A44C4'}}>Arc</a>
         </p>
       </footer>
     </div>

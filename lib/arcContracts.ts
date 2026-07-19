@@ -42,3 +42,21 @@ export const PAYNOTE_ROUTER_V2 = '0xc7190DBb23861b7dB15eED4326eBa33B0eeacEa4'
 
 // Test address (blocklisted — for testing revert behavior only)
 export const TEST_BLOCKLISTED = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+
+// ============================================================
+// Token registry — single source of truth for all payment routes.
+// Any route that accepts or rewrites a token symbol must import from here.
+// ============================================================
+
+export const SUPPORTED_TOKENS: Record<string, { address: string; decimals: number; label: string }> = {
+  USDC:   { address: '0x3600000000000000000000000000000000000000', decimals: 6, label: 'USDC' },
+  EURC:   { address: '0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a', decimals: 6, label: 'EURC' },
+  cirBTC: { address: '0xf0C4a4CE82A5746AbAAd9425360Ab04fbBA432BF', decimals: 8, label: 'cirBTC' },
+  USYC:   { address: '0xe9185F0c5F296Ed1797AaE4238D26CCaBEadb86C', decimals: 6, label: 'USYC' },
+}
+
+// Tokens available without allowlist (safe for general use).
+export const PUBLIC_TOKENS = ['USDC', 'EURC', 'cirBTC'] as const
+
+// Tokens requiring Circle allowlist approval (e.g., USYC).
+export const ALLOWLIST_TOKENS = ['USYC'] as const
