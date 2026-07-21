@@ -4,7 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'PayNote',
   description: 'Request USDC payments. Share a link. Get paid.',
-  icons: { icon: '/icon.png', shortcut: '/icon.png', apple: '/icon.png' },
+  icons: { icon: '/icon.svg', shortcut: '/icon.svg', apple: '/icon.svg' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
