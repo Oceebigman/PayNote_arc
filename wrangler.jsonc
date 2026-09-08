@@ -1,0 +1,51 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "paynote",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  // Points at a Postgres instance via Cloudflare's connection pooler — the
+  // VPS-hosted Postgres is gone, so `id` needs to be a Hyperdrive config
+  // created against whatever Postgres now backs this (Neon/Supabase/etc).
+  // Run: wrangler hyperdrive create paynote-db --connection-string="postgresql://..."
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "REPLACE_WITH_HYPERDRIVE_ID",
+      "localConnectionString": "postgresql://egcrypt:CHANGE_ME@localhost:5432/paynote_db"
+    }
+  ],
+
+  // Producer only — this worker enqueues webhook-delivery retries (see
+  // lib/webhooks.ts). They're consumed by the separate paynote-jobs worker
+  // in cloudflare/jobs-worker/, not by this one. Keeping OpenNext's own
+  // generated .open-next/worker.js as `main`, unmodified, avoids the
+  // esbuild double-bundling issues that come from wrapping it with a
+  // custom entrypoint (confirmed by testing: a hand-wrapped entry broke
+  // with "__dirname is not defined" at runtime, because wrangler's own
+  // bundler re-processes the already-bundled OpenNext output and drops the
+  // patches OpenNext applied when it originally built worker.js).
+  "queues": {
+    "producers": [
+      { "binding": "WEBHOOK_QUEUE", "queue": "paynote-webhook-retries" }
+    ]
+  },
+
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "https://paynote.space",
+    "NEXT_PUBLIC_ARC_RPC": "https://rpc.testnet.arc.network",
+    "NEXT_PUBLIC_CHAIN_ID": "0x4cef52",
+    "NEXT_PUBLIC_PAYNOTE_ROUTER": "0x829fe116E221d14Db289623028c5AC6b2F30BD82",
+    "NEXT_PUBLIC_PAYNOTE_ROUTER_V2": "0xc7190DBb23861b7dB15eED4326eBa33B0eeacEa4"
+  }
+
+  // Secrets (ADMIN_SECRET, INTERNAL_JOBS_SECRET, etc.) are NOT set here — use:
+  //   wrangler secret put ADMIN_SECRET
+  //   wrangler secret put INTERNAL_JOBS_SECRET
+}

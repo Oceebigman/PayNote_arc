@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   }, { status: 401 })
 
   try {
-    const { amount, reason, to_address, token, note, expires_in, metadata, signature, notify_url } = await req.json()
+    const { amount, reason, to_address, token, note, expires_in, metadata, signature, notify_url } = (await req.json()) as any
 
     if (!amount || !reason || !to_address) {
       return NextResponse.json({

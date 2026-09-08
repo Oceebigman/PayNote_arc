@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, use_case, project_name } = await req.json()
+    const { email, use_case, project_name } = (await req.json()) as any
     if (!email || !use_case) {
       return NextResponse.json({ error: 'email and use_case required' }, { status: 400 })
     }

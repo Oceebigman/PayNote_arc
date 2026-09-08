@@ -12,7 +12,7 @@ async function checkArcRpc(): Promise<{ ok: boolean; latency: number }> {
       body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 }),
       signal: AbortSignal.timeout(5000),
     })
-    const data = await res.json()
+    const data = (await res.json()) as any
     return { ok: !!data.result, latency: Date.now() - start }
   } catch {
     return { ok: false, latency: Date.now() - start }

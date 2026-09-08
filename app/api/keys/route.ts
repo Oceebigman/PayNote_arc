@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const adminSecret = process.env.ADMIN_SECRET
   const auth = req.headers.get('x-admin-secret')
   if (auth !== adminSecret) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { name } = await req.json()
+  const { name } = (await req.json()) as any
   if (!name) return NextResponse.json({ error: 'name required' }, { status: 400 })
   const key = generateKey()
   const keyHash = hashKey(key)
@@ -35,7 +35,7 @@ export async function DELETE(req: NextRequest) {
   const adminSecret = process.env.ADMIN_SECRET
   const auth = req.headers.get('x-admin-secret')
   if (auth !== adminSecret) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { id } = await req.json()
+  const { id } = (await req.json()) as any
   await pool.query('UPDATE api_keys SET active = false WHERE id = $1', [id])
   return NextResponse.json({ success: true })
 }

@@ -63,7 +63,7 @@ export default function AdminClient({ stats, requests, webhooks, deliveries, api
   async function handleCreateKey(e: React.FormEvent) {
     e.preventDefault(); setSaving(true)
     const res = await fetch('/api/keys', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret }, body: JSON.stringify({ name: newKeyName }) })
-    const data = await res.json()
+    const data = (await res.json()) as any
     setNewKey(data.key); setNewKeyName(''); setSaving(false)
   }
 

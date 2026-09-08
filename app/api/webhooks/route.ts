@@ -13,7 +13,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { url, events, secret } = await req.json()
+    const { url, events, secret } = (await req.json()) as any
     if (!url || !secret) return NextResponse.json({ error: 'url and secret required' }, { status: 400 })
 
     const validEvents = ['payment.created', 'payment.completed', 'payment.failed', 'payment.expired']
@@ -37,7 +37,7 @@ export async function DELETE(req: NextRequest) {
   const auth = req.headers.get('x-admin-secret')
   if (auth !== adminSecret) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   try {
-    const { id } = await req.json()
+    const { id } = (await req.json()) as any
     if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
     await pool.query('DELETE FROM webhooks WHERE id = $1', [id])
     return NextResponse.json({ success: true })

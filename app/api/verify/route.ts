@@ -12,7 +12,7 @@ async function fetchReceiptWithRetry(txHash: string, attempt = 0): Promise<Recor
       body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_getTransactionReceipt', params: [txHash], id: 1 }),
       signal: AbortSignal.timeout(8000),
     })
-    const data = await res.json()
+    const data = (await res.json()) as any
     return data.result ?? null
   } catch (err) {
     if (attempt < MAX_RETRIES) {
@@ -25,7 +25,7 @@ async function fetchReceiptWithRetry(txHash: string, attempt = 0): Promise<Recor
 
 export async function POST(req: NextRequest) {
   try {
-    const { slug, tx_hash } = await req.json()
+    const { slug, tx_hash } = (await req.json()) as any
     if (!slug || !tx_hash) {
       return NextResponse.json({ error: 'slug and tx_hash required' }, { status: 400 })
     }
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_getTransactionByHash', params: [tx_hash], id: 1 }),
         signal: AbortSignal.timeout(5000),
       })
-      const txData = await txRes.json()
+      const txData = (await txRes.json()) as any
       if (txData.result?.input && txData.result.input !== '0x') {
         // Attempt to decode memo from input data
         const hex = txData.result.input.slice(2)

@@ -79,7 +79,7 @@ export default function SupportPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed }),
       })
-      const data = await res.json()
+      const data = (await res.json()) as any
       if (!res.ok) throw new Error(data.error || 'Server error')
       setMessages(m => [...m, { role: 'penny', content: data.response, escalated: !!data.escalated }])
     } catch (err) {

@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import pool from '@/lib/db'
 import MyHistoryClient from './MyHistoryClient'
 import { notFound } from 'next/navigation'

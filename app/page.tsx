@@ -84,7 +84,7 @@ export default function Home() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...values, token, expires_in: values.expires_in ? Number(values.expires_in) : undefined, recurring: values.recurring !== 'once' ? values.recurring : undefined }),
       })
-      const data = await res.json()
+      const data = (await res.json()) as any
       if (!res.ok) throw new Error(data.error || 'Something went wrong')
       router.push('/confirm/' + data.slug)
     } catch (err: unknown) {

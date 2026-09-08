@@ -1,0 +1,29 @@
+{
+  "name": "paynote-jobs",
+  "main": "worker.ts",
+  "compatibility_date": "2025-06-01",
+
+  // Same queue the main app (../../wrangler.jsonc) produces retries onto.
+  "queues": {
+    "consumers": [
+      {
+        "queue": "paynote-webhook-retries",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 3
+      }
+    ]
+  },
+
+  // Replaces the crontab entry that used to hit /api/expire on the VPS.
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+
+  "vars": {
+    "APP_URL": "https://paynote.space"
+  }
+
+  // Secret: wrangler secret put INTERNAL_JOBS_SECRET
+  // (must match the same value set on the main worker)
+}

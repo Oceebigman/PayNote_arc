@@ -212,7 +212,7 @@ function matchKnowledge(message: string): KnowledgeEntry | null {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    const body = (await req.json()) as any
     const message = body?.message
     if (!message || typeof message !== 'string' || message.length > 2000) {
       return NextResponse.json(

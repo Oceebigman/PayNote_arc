@@ -3,7 +3,7 @@ import pool from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
-    const { slug, tx_hash, sender_address } = await req.json()
+    const { slug, tx_hash, sender_address } = (await req.json()) as any
     if (!slug || !tx_hash) {
       return NextResponse.json({ error: 'slug and tx_hash are required' }, { status: 400 })
     }
