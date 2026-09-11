@@ -53,18 +53,19 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
           {templates.map(t => {
             const colors = CATEGORY_COLORS[t.category] || CATEGORY_COLORS.invoice
             return (
-              <div key={t.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:border-blue-200 transition-colors cursor-pointer"
+              <div key={t.id} className="rounded-xl border p-5 flex items-center gap-4 hover:border-blue-300 transition-colors cursor-pointer"
+                style={{background:'var(--card)', borderColor:'var(--border)'}}
                 onClick={() => useTemplate(t)}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="font-semibold text-gray-900 text-sm">{t.title}</p>
+                    <p className="font-semibold text-sm" style={{color:'var(--text)'}}>{t.title}</p>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${colors.bg} ${colors.text}`}>{t.category}</span>
                   </div>
-                  <p className="text-xs text-gray-400 truncate">{t.note}</p>
+                  <p className="text-xs truncate" style={{color:'var(--muted)'}}>{t.note}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="font-bold text-gray-900 text-sm">{Number(t.default_amount).toFixed(2)}</p>
-                  <p className="text-xs text-gray-400">USDC</p>
+                  <p className="font-semibold text-sm" style={{color:'var(--text)'}}>{Number(t.default_amount).toFixed(2)}</p>
+                  <p className="text-xs" style={{color:'var(--muted)'}}>USDC</p>
                 </div>
               </div>
             )

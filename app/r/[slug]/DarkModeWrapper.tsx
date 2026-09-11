@@ -57,11 +57,13 @@ function CopyLinkBar({ url, dark, border, card, muted }: { url: string; dark: bo
 
 export default function DarkModeWrapper({ req, slug, appUrl }: Props) {
   const [dark, setDark] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('paynote-theme')
     if (saved === 'dark') setDark(true)
+    setMounted(true)
 
     // Get connected wallet for balance check
     const ethereum = (window as unknown as { ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<unknown> } }).ethereum
@@ -92,6 +94,8 @@ export default function DarkModeWrapper({ req, slug, appUrl }: Props) {
   const muted = dark ? '#475569' : '#94a3b8'
   const inputBg = dark ? '#0d1321' : '#f8fafc'
   const subtle = dark ? '#1a2535' : '#f1f5f9'
+
+  if (!mounted) return null
 
   return (
     <div className="min-h-screen flex flex-col transition-all duration-300" style={{background: bg}}>

@@ -16,6 +16,7 @@ export default function ConfirmClient({ req, link, slug }: Props) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [dark, setDark] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [revealed, setRevealed] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const token = req.token || 'USDC'
@@ -23,6 +24,7 @@ export default function ConfirmClient({ req, link, slug }: Props) {
   useEffect(() => {
     const saved = localStorage.getItem('paynote-theme')
     if (saved === 'dark') setDark(true)
+    setMounted(true)
     setTimeout(() => setRevealed(true), 100)
   }, [])
 
@@ -50,6 +52,8 @@ export default function ConfirmClient({ req, link, slug }: Props) {
   const text = dark ? '#f1f5f9' : '#111827'
   const muted = dark ? '#64748b' : '#9ca3af'
   const inputBg = dark ? '#111316' : '#f9fafb'
+
+  if (!mounted) return null
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-200" style={{background: bg}}>
