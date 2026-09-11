@@ -407,14 +407,21 @@ GET https://gateway.circle.com/forward?
       <SiteFooter />
       <PennyBubble />
 
+      {/* Scoped to this page's own sidebar/content only — the earlier
+          version of this block also had bare `* {}` and `button:hover {}`
+          rules with no scoping at all, which is very likely what caused
+          the desktop nav (a totally different component, SiteHeader) to
+          render with its spacing broken only on this page: unlayered
+          plain CSS like this beats Tailwind's own layered utility classes
+          in the cascade regardless of selector specificity, so a bare `*`
+          selector here could quietly override gap/spacing utilities
+          throughout the whole page, including inside SiteHeader. */}
       <style>{`
         @media (max-width: 768px) {
           .mobile-menu-btn { display: flex !important; }
           aside { display: ${mobileNav ? 'block' : 'none'}; position: fixed; top: 60px; left: 0; right: 0; height: auto; z-index: 40; border-right: none; border-bottom: 1px solid ${border}; }
           main { padding: 24px 20px !important; }
         }
-        button:hover { opacity: 0.8; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         pre { white-space: pre-wrap; word-break: break-all; }
       `}</style>
     </div>
