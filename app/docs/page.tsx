@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import SiteHeader from '@/app/components/SiteHeader'
 import SiteFooter from '@/app/components/SiteFooter'
+import PennyBubble from '@/app/components/PennyBubble'
 
 const SECTIONS = [
   { id: 'quickstart', label: 'Quick Start' },
@@ -404,6 +405,7 @@ GET https://gateway.circle.com/forward?
       </div>
 
       <SiteFooter />
+      <PennyBubble />
 
       <style>{`
         @media (max-width: 768px) {

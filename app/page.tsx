@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import SiteHeader from '@/app/components/SiteHeader'
 import SiteFooter from '@/app/components/SiteFooter'
+import PennyBubble from '@/app/components/PennyBubble'
 import NetworkBackground from '@/app/components/NetworkBackground'
 import LangSelector, { LANG_KEY } from '@/app/components/LangSelector'
 import { t, type Lang } from '@/lib/i18n'
@@ -301,6 +302,7 @@ export default function Home() {
       )}
 
       <SiteFooter />
+      <PennyBubble />
     </div>
   )
 }

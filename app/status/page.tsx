@@ -3,6 +3,7 @@ export const revalidate = 0
 
 import pool from '@/lib/db'
 import SiteHeader from '@/app/components/SiteHeader'
+import PennyBubble from '@/app/components/PennyBubble'
 import SiteFooter from '@/app/components/SiteFooter'
 
 async function checkArcRpc(): Promise<{ ok: boolean; latency: number }> {
@@ -47,7 +48,7 @@ export default async function StatusPage() {
       <SiteHeader badge="Status" />
 
       <div className="max-w-2xl lg:max-w-3xl mx-auto px-4 lg:px-8 py-12">
-        <div className="text-center mb-12">
+        <div className="fade-up text-center mb-12">
           <div className={`inline-flex items-center gap-2 text-sm font-black px-5 py-3 rounded-2xl mb-4 ${allOk ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
             <span className={`w-2.5 h-2.5 rounded-full ${allOk ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}/>
             {allOk ? 'All systems operational' : 'Partial outage'}
@@ -55,7 +56,7 @@ export default async function StatusPage() {
           <p className="text-sm font-semibold" style={{color: 'var(--muted)'}}>Last checked: {new Date().toUTCString()}</p>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="fade-up-1 flex flex-col gap-3">
           {services.map(s => (
             <div key={s.name} className="rounded-2xl border p-5 flex items-center justify-between" style={{background: 'var(--card)', borderColor: 'var(--border)'}}>
               <div className="flex items-center gap-3">
@@ -90,6 +91,7 @@ export default async function StatusPage() {
       </div>
 
       <SiteFooter />
+      <PennyBubble />
     </div>
   )
 }

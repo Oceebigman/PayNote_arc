@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import SiteHeader from '@/app/components/SiteHeader'
+import PennyBubble from '@/app/components/PennyBubble'
 import SiteFooter from '@/app/components/SiteFooter'
 
 export default function BuildPage() {
@@ -53,7 +54,7 @@ export default function BuildPage() {
 
       <div className="max-w-5xl mx-auto px-5 sm:px-8 py-16">
 
-        <div className="text-center mb-16">
+        <div className="fade-up text-center mb-16">
           <div className="inline-flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-full border mb-8 uppercase tracking-widest" style={{borderColor: border, color: muted, background: card}}>
             <span className="w-2 h-2 rounded-full bg-green-500 inline-block animate-pulse"></span>
             Open API · No account needed
@@ -140,6 +141,7 @@ console.log(request.url)
       </div>
 
       <SiteFooter />
+      <PennyBubble />
     </div>
   )
 }

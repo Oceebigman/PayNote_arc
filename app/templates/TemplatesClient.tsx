@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import SiteHeader from '@/app/components/SiteHeader'
+import PennyBubble from '@/app/components/PennyBubble'
 import SiteFooter from '@/app/components/SiteFooter'
 
 interface Template {
@@ -37,7 +38,7 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
       <SiteHeader badge="Templates" />
       <main className="flex-1 px-4 lg:px-8 py-12 max-w-2xl lg:max-w-4xl mx-auto w-full">
 
-        <div className="flex items-center gap-3 mb-8">
+        <div className="fade-up flex items-center gap-3 mb-8">
           <div>
             <span className="font-semibold text-lg tracking-tight" style={{color:'var(--text)'}}>Payment Templates</span>
             <p className="text-xs" style={{color:'var(--muted)'}}>Start fast with a pre-filled request</p>
@@ -49,7 +50,7 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="fade-up-1 grid grid-cols-1 lg:grid-cols-2 gap-3">
           {templates.map(t => {
             const colors = CATEGORY_COLORS[t.category] || CATEGORY_COLORS.invoice
             return (
@@ -74,6 +75,7 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
       </main>
 
       <SiteFooter />
+      <PennyBubble />
     </div>
   )
 }

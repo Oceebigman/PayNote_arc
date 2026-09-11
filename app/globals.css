@@ -103,6 +103,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   to   { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes penny-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50%      { transform: scale(1.5); opacity: 0; }
+}
+@keyframes penny-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}
 
 .fade-up   { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both; }
 .fade-up-1 { animation: fadeUp 0.7s 0.05s cubic-bezier(0.16,1,0.3,1) both; }

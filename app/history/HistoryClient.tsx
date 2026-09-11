@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SiteHeader from '@/app/components/SiteHeader'
+import PennyBubble from '@/app/components/PennyBubble'
 import SiteFooter from '@/app/components/SiteFooter'
 
 interface Request {
@@ -46,7 +47,7 @@ export default function HistoryClient({ requests }: { requests: Request[] }) {
       <SiteHeader badge="History" />
       <main className="flex-1 px-4 lg:px-8 py-12 max-w-2xl lg:max-w-3xl mx-auto w-full">
 
-        <div className="flex items-center gap-3 mb-8">
+        <div className="fade-up flex items-center gap-3 mb-8">
           <div>
             <span className="font-semibold text-lg tracking-tight" style={{color:'var(--text)'}}>Payment History</span>
             <p className="text-xs" style={{color:'var(--muted)'}}>{requests.length} total requests</p>
@@ -56,7 +57,7 @@ export default function HistoryClient({ requests }: { requests: Request[] }) {
           </button>
         </div>
 
-        <div className="flex gap-3 mb-5">
+        <div className="fade-up-1 flex gap-3 mb-5">
           <input type="text" placeholder="Search by reason, address, tx hash…"
             value={search} onChange={e => setSearch(e.target.value)}
             className="flex-1 rounded-lg px-4 py-2.5 text-sm border outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
@@ -114,6 +115,7 @@ export default function HistoryClient({ requests }: { requests: Request[] }) {
       </main>
 
       <SiteFooter />
+      <PennyBubble />
     </div>
   )
 }
