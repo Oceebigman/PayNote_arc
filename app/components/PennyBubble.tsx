@@ -15,25 +15,24 @@ export default function PennyBubble() {
       href="/support"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="fixed bottom-5 right-5 z-40 flex items-center gap-2.5 rounded-full pl-3 pr-3 py-3 transition-all duration-300 hover:pr-4"
+      className="fixed bottom-5 right-5 z-40 flex items-center gap-2.5 rounded-full pl-3 pr-3 py-3 transition-all duration-300 hover:pr-4 hover:scale-105"
       style={{
-        background: 'var(--card)',
-        border: '1px solid var(--border)',
-        boxShadow: 'var(--shadow)',
+        background: '#1A44C4',
+        boxShadow: '0 8px 24px rgba(26,68,196,0.45), 0 2px 8px rgba(0,0,0,0.25)',
       }}
       aria-label="Ask Penny for help"
     >
       <span className="relative flex items-center justify-center shrink-0" style={{ width: 32, height: 32 }}>
         <span
-          className="absolute inset-0 rounded-full"
-          style={{ background: '#1A44C4', opacity: 0.3, animation: 'penny-pulse 2.4s ease-in-out infinite' }}
+          className="absolute -inset-1.5 rounded-full"
+          style={{ background: '#ffffff', opacity: 0.25, animation: 'penny-pulse 2.4s ease-in-out infinite' }}
         />
         {/* Vector likeness: cap + headphones + glasses + beard — the
             recognizable features of PayNote's character, simplified to
             read clearly at small size (no source image file was available
             to use directly). */}
         <svg width="32" height="32" viewBox="0 0 32 32" className="relative" style={{ animation: 'penny-bob 3s ease-in-out infinite' }}>
-          <circle cx="16" cy="16" r="16" fill="#4a3527" />
+          <circle cx="16" cy="16" r="16" fill="#4a3527" stroke="white" strokeWidth="1.5" />
           {/* headphone band + ear cups */}
           <path d="M6 15 A10 9 0 0 1 26 15" stroke="#111" strokeWidth="2.2" fill="none" strokeLinecap="round" />
           <circle cx="6" cy="17" r="2.6" fill="#111" />
@@ -51,7 +50,7 @@ export default function PennyBubble() {
       </span>
       <span
         className="text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300"
-        style={{ color: 'var(--text)', maxWidth: hover ? '120px' : '0px', opacity: hover ? 1 : 0 }}
+        style={{ color: '#ffffff', maxWidth: hover ? '120px' : '0px', opacity: hover ? 1 : 0 }}
       >
         Ask Penny
       </span>
