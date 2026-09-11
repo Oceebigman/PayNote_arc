@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+html {
+  /* Reserve scrollbar space on every page, whether or not that page
+     actually needs to scroll — otherwise a short page (no scrollbar) and
+     a long one (scrollbar present) have a different usable width for
+     fixed layout like the nav, even though nothing about the nav itself
+     changed. */
+  scrollbar-gutter: stable;
+}
+
 :root {
   --font: "Inter", "SF Pro Display", -apple-system, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
