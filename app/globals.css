@@ -2,6 +2,7 @@
 
 :root {
   --font: "Inter", "SF Pro Display", -apple-system, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
   /* Light theme (default) */
   --bg: #f4f6fb;
   --card: #ffffff;
@@ -12,6 +13,7 @@
   --subtle: #f1f5f9;
   --nav-bg: rgba(255,255,255,0.92);
   --shadow: 0 25px 60px rgba(15,23,42,0.1);
+  --network-opacity: 0.5;
 }
 
 [data-theme="dark"] {
@@ -24,6 +26,7 @@
   --subtle: #1a2535;
   --nav-bg: rgba(8,12,20,0.92);
   --shadow: 0 25px 60px rgba(0,0,0,0.5);
+  --network-opacity: 0.9;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

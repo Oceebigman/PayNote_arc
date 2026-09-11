@@ -57,7 +57,7 @@ export default function ConfirmClient({ req, link, slug }: Props) {
         <div className={`w-full max-w-md transition-all duration-500 ${revealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
 
           <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
+            <a href="/" className="flex items-center gap-3 hover:opacity-70 transition-opacity">
               <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
                 <defs>
                   <linearGradient id="pgc" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse">
@@ -68,7 +68,7 @@ export default function ConfirmClient({ req, link, slug }: Props) {
                 <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgc)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
               <span className="font-bold text-lg tracking-tight" style={{color: text}}>PayNote</span>
-            </div>
+            </a>
             <button onClick={toggleDark} className="p-2 rounded-lg border transition-colors" style={{borderColor: border, background: inputBg}}>
               {dark ? (
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}>

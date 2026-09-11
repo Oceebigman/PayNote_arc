@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import SiteHeader from '@/app/components/SiteHeader'
 
 interface Template {
   id: string
@@ -31,26 +32,18 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{background: '#F4F5F7'}}>
+    <div className="min-h-screen flex flex-col" style={{background: 'var(--bg)'}}>
+      <SiteHeader badge="Templates" />
       <main className="flex-1 px-4 py-12 max-w-2xl mx-auto w-full">
 
         <div className="flex items-center gap-3 mb-8">
-          <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
-            <defs>
-              <linearGradient id="pgt" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#4A154B"/>
-                <stop offset="100%" stopColor="#1A44C4"/>
-              </linearGradient>
-            </defs>
-            <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgt)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-          </svg>
           <div>
-            <span className="font-bold text-lg tracking-tight text-gray-900">Payment Templates</span>
-            <p className="text-xs text-gray-400">Start fast with a pre-filled request</p>
+            <span className="font-semibold text-lg tracking-tight" style={{color:'var(--text)'}}>Payment Templates</span>
+            <p className="text-xs" style={{color:'var(--muted)'}}>Start fast with a pre-filled request</p>
           </div>
           <button onClick={() => router.push('/')}
-            className="ml-auto text-sm font-bold text-white px-4 py-2 rounded-xl"
-            style={{background: 'linear-gradient(135deg, #102A83, #1A44C4)'}}>
+            className="ml-auto text-sm font-semibold text-white px-4 py-2 rounded-lg"
+            style={{background: '#1A44C4'}}>
             + Custom
           </button>
         </div>
