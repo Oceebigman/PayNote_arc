@@ -73,7 +73,7 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
   )
 
   return (
-    <nav className="sticky top-0 z-50 h-[60px] px-3 sm:px-6 lg:px-10 flex items-center justify-between gap-2 border-b backdrop-blur-xl overflow-hidden" style={{borderColor:'var(--border)',background:'var(--nav-bg)'}}>
+    <nav className="sticky top-0 z-50 h-[60px] px-3 sm:px-6 lg:px-10 flex items-center justify-between gap-2 border-b backdrop-blur-xl" style={{borderColor:'var(--border)',background:'var(--nav-bg)'}}>
       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
         <a href="/" className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <svg width="18" height="18" viewBox="0 0 36 36" fill="none" className="sm:w-[22px] sm:h-[22px] shrink-0">
@@ -104,7 +104,7 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
             </svg>
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-[calc(100%+8px)] rounded-xl border overflow-hidden" style={{minWidth:'220px', background:'var(--card)', borderColor:'var(--border)', boxShadow:'var(--shadow)'}}>
+            <div className="absolute right-0 top-[calc(100%+8px)] z-[100] rounded-xl border overflow-hidden" style={{minWidth:'220px', background:'var(--card)', borderColor:'var(--border)', boxShadow:'var(--shadow)'}}>
               {MORE_LINKS.map((link, i) => (
                 <a key={link.href} href={link.href} onClick={()=>setMenuOpen(false)}
                   className="flex flex-col px-4 py-3 hover:opacity-80"
@@ -142,7 +142,7 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
             </svg>
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-[calc(100%+8px)] rounded-xl border overflow-hidden" style={{width:'240px', background:'var(--card)', borderColor:'var(--border)', boxShadow:'var(--shadow)'}}>
+            <div className="absolute right-0 top-[calc(100%+8px)] z-[100] rounded-xl border overflow-hidden" style={{width:'240px', background:'var(--card)', borderColor:'var(--border)', boxShadow:'var(--shadow)'}}>
               {PRIMARY_LINKS.map((link, i) => (
                 <a key={link.href} href={link.href} onClick={()=>setMenuOpen(false)}
                   className="block px-4 py-3 text-sm font-semibold hover:opacity-80"
