@@ -1,14 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 export default function BuildPage() {
   const appUrl = 'https://paynote.space'
   const [dark, setDark] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('paynote-theme')
     setDark(saved === 'dark')
+    setMounted(true)
     const observer = new MutationObserver(() => {
       setDark(document.documentElement.getAttribute('data-theme') === 'dark')
     })
@@ -16,20 +20,12 @@ export default function BuildPage() {
     return () => observer.disconnect()
   }, [])
 
-  function toggleDark() {
-    const next = !dark
-    setDark(next)
-    localStorage.setItem('paynote-theme', next ? 'dark' : 'light')
-    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-  }
-
   const bg = dark ? '#080c14' : '#f4f6fb'
   const card = dark ? '#111827' : '#ffffff'
   const border = dark ? '#1e2a3a' : '#e2e8f0'
   const text = dark ? '#f1f5f9' : '#0f172a'
   const muted = dark ? '#475569' : '#64748b'
   const inputBg = dark ? '#0d1321' : '#f8fafc'
-  const navBg = dark ? 'rgba(8,12,20,0.92)' : 'rgba(255,255,255,0.92)'
 
   const useCases = [
     { title: 'Freelance invoicing', desc: 'Generate a payment request per invoice. Share the link. Get paid in USDC. Receipt auto-generated on settlement.', tag: 'Payments' },
@@ -49,28 +45,11 @@ export default function BuildPage() {
     Widget:    { bg: '#d9770620', color: '#d97706' },
   }
 
+  if (!mounted) return null
+
   return (
     <div className="min-h-screen transition-colors duration-300" style={{background: bg, color: text, fontFamily: '"Inter", system-ui, sans-serif'}}>
-
-      <nav className="sticky top-0 z-50 px-5 sm:px-12 py-4 flex items-center justify-between border-b backdrop-blur-xl" style={{borderColor: border, background: navBg}}>
-        <a href="/" className="flex items-center gap-2.5 group">
-          <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
-            <defs><linearGradient id="pgb" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4A154B"/><stop offset="100%" stopColor="#1A44C4"/></linearGradient></defs>
-            <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgb)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-          </svg>
-          <span className="font-black text-lg group-hover:opacity-70 transition-opacity" style={{color: text}}>PayNote</span>
-        </a>
-        <div className="flex items-center gap-3">
-          <a href="/docs" className="text-sm font-semibold hover:opacity-70 transition-opacity" style={{color: muted}}>Docs</a>
-          <button onClick={toggleDark} className="p-2.5 rounded-xl border transition-all hover:scale-105" style={{borderColor: border, background: dark ? '#1a2535' : '#f1f5f9'}}>
-            {dark
-              ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
-              : <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{color: muted}}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-            }
-          </button>
-          <a href="/" className="text-sm font-bold text-white px-4 py-2 rounded-xl hover:opacity-90" style={{background: 'linear-gradient(135deg, #102A83, #1A44C4)'}}>← App</a>
-        </div>
-      </nav>
+      <SiteHeader badge="Use the API" />
 
       <div className="max-w-5xl mx-auto px-5 sm:px-8 py-16">
 
@@ -160,11 +139,7 @@ console.log(request.url)
         </div>
       </div>
 
-      <footer className="py-6 border-t mt-12" style={{borderColor: border, background: card}}>
-        <p className="text-center text-sm font-semibold" style={{color: muted}}>
-          PayNote · Built on <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-black hover:opacity-70" style={{color: '#1A44C4'}}>Arc</a>
-        </p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

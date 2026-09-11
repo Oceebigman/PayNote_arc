@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 const SECTIONS = [
   { id: 'quickstart', label: 'Quick Start' },
@@ -23,12 +25,14 @@ const SECTIONS = [
 export default function DocsPage() {
   const appUrl = 'https://paynote.space'
   const [dark, setDark] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [active, setActive] = useState('quickstart')
   const [mobileNav, setMobileNav] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('paynote-theme')
     setDark(saved === 'dark')
+    setMounted(true)
     const observer = new MutationObserver(() => {
       setDark(document.documentElement.getAttribute('data-theme') === 'dark')
     })
@@ -50,13 +54,6 @@ export default function DocsPage() {
     return () => { observer.disconnect(); window.removeEventListener('scroll', handleScroll) }
   }, [])
 
-  function toggleDark() {
-    const next = !dark
-    setDark(next)
-    localStorage.setItem('paynote-theme', next ? 'dark' : 'light')
-    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-  }
-
   function scrollTo(id: string) {
     setActive(id)
     setMobileNav(false)
@@ -71,44 +68,23 @@ export default function DocsPage() {
   const muted = dark ? '#475569' : '#64748b'
   const inputBg = dark ? '#0d1321' : '#f8fafc'
   const sidebarBg = dark ? '#0d1321' : '#ffffff'
-  const navBg = dark ? 'rgba(8,12,20,0.95)' : 'rgba(255,255,255,0.95)'
+
+  if (!mounted) return null
 
   return (
     <div style={{ background: bg, color: text, fontFamily: '"Inter", system-ui, sans-serif', minHeight: '100vh' }}>
 
-      {/* Top nav */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 50, borderBottom: `1px solid ${border}`, background: navBg, backdropFilter: 'blur(12px)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* Mobile menu toggle */}
-            <button onClick={() => setMobileNav(o => !o)} style={{ display: 'none', padding: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: 'transparent', cursor: 'pointer' }} className="mobile-menu-btn">
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: muted }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-              <svg width="24" height="24" viewBox="0 0 36 36" fill="none">
-                <defs><linearGradient id="pgd" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4A154B"/><stop offset="100%" stopColor="#1A44C4"/></linearGradient></defs>
-                <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgd)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-              <span style={{ fontWeight: 900, fontSize: '18px', color: text }}>PayNote</span>
-            </a>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: muted, background: inputBg, border: `1px solid ${border}`, borderRadius: '6px', padding: '2px 8px' }}>Docs</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <a href="/build" style={{ fontSize: '14px', fontWeight: 600, color: muted, textDecoration: 'none' }}>Use the API</a>
-            <button onClick={toggleDark} style={{ padding: '8px', borderRadius: '10px', border: `1px solid ${border}`, background: inputBg, cursor: 'pointer' }}>
-              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: muted }}>
-                {dark
-                  ? <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
-                  : <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                }
-              </svg>
-            </button>
-            <a href="/" style={{ fontSize: '13px', fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg,#102A83,#1A44C4)', borderRadius: '10px', padding: '8px 16px', textDecoration: 'none' }}>← App</a>
-          </div>
-        </div>
-      </nav>
+      <SiteHeader badge="Docs" />
+
+      {/* Sections toggle — page-specific (the docs TOC sidebar), not site nav, so it's separate from SiteHeader's own menu. Only shown below 768px, matching the sidebar's own breakpoint. */}
+      <button onClick={() => setMobileNav(o => !o)}
+        style={{ display: 'none', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 24px', borderBottom: `1px solid ${border}`, background: 'transparent', cursor: 'pointer', color: muted, fontSize: '13px', fontWeight: 600 }}
+        className="mobile-menu-btn" aria-label="Toggle sections menu">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        Sections
+      </button>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '0' }}>
 
@@ -426,6 +402,8 @@ GET https://gateway.circle.com/forward?
           <div style={{ height: '80px' }} />
         </main>
       </div>
+
+      <SiteFooter />
 
       <style>{`
         @media (max-width: 768px) {

@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (limited) return limited
 
   try {
-    const body = await req.json()
+    const body = (await req.json()) as any
     const { amount, reason, note, to_address, token, expires_in, recurring, display_name, signature } = body
 
     if (!amount || !reason || !to_address) {

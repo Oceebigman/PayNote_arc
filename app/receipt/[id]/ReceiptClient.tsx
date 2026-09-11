@@ -66,7 +66,7 @@ export default function ReceiptClient({ req }: { req: Req }) {
         <div className="w-full max-w-md">
 
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
+            <a href="/" className="flex items-center gap-3 hover:opacity-70 transition-opacity">
               <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
                 <defs>
                   <linearGradient id="pgr" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse">
@@ -77,7 +77,7 @@ export default function ReceiptClient({ req }: { req: Req }) {
                 <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgr)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
               <span className="font-bold text-lg tracking-tight text-gray-900">PayNote</span>
-            </div>
+            </a>
             <span className="text-sm bg-green-100 text-green-700 font-semibold px-3 py-1 rounded-full flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
               Verified Receipt

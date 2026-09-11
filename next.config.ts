@@ -5,3 +5,8 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Makes the Hyperdrive/Queue/Cron bindings available to `next dev` via
+// getCloudflareContext(), same as they are in `wrangler dev` / production.
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+initOpenNextCloudflareForDev();

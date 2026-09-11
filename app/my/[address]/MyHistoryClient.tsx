@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import ThemeToggle from '@/app/components/ThemeToggle'
+import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 interface Request {
   id: string; slug: string; amount: string; reason: string
@@ -21,18 +22,6 @@ export default function MyHistoryClient({ requests, address }: { requests: Reque
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [dark, setDark] = useState(false)
-
-  useEffect(() => {
-    const saved = localStorage.getItem('paynote-theme')
-    setDark(saved === 'dark')
-    const observer = new MutationObserver(() => {
-      setDark(document.documentElement.getAttribute('data-theme') === 'dark')
-    })
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-    return () => observer.disconnect()
-  }, [])
-
   const filtered = requests.filter(r => {
     const matchSearch = r.reason.toLowerCase().includes(search.toLowerCase()) || r.slug.toLowerCase().includes(search.toLowerCase())
     const matchFilter = filter === 'all' || r.status === filter
@@ -48,19 +37,7 @@ export default function MyHistoryClient({ requests, address }: { requests: Reque
 
   return (
     <div className="min-h-screen transition-colors" style={{background: 'var(--bg)', color: 'var(--text)'}}>
-      <nav className="sticky top-0 z-50 px-5 py-4 flex items-center justify-between border-b backdrop-blur-xl" style={{borderColor: 'var(--border)', background: 'var(--nav-bg)'}}>
-        <a href="/" className="flex items-center gap-2.5">
-          <svg width="24" height="24" viewBox="0 0 36 36" fill="none">
-            <defs><linearGradient id="pgm" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4A154B"/><stop offset="100%" stopColor="#1A44C4"/></linearGradient></defs>
-            <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgm)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-          </svg>
-          <span className="font-black text-lg" style={{color: 'var(--text)'}}>PayNote</span>
-        </a>
-        <div className="flex items-center gap-2">
-          <ThemeToggle/>
-          <button onClick={() => router.push('/')} className="text-sm font-black text-white px-4 py-2 rounded-xl" style={{background: 'linear-gradient(135deg, #102A83, #1A44C4)'}}>+ New</button>
-        </div>
-      </nav>
+      <SiteHeader badge="My History" />
 
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="mb-8">
@@ -132,6 +109,8 @@ export default function MyHistoryClient({ requests, address }: { requests: Reque
           </div>
         )}
       </div>
+
+      <SiteFooter />
     </div>
   )
 }

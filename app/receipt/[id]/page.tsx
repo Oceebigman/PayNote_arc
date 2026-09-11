@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { notFound } from 'next/navigation'
 import pool from '@/lib/db'
 import ReceiptClient from './ReceiptClient'

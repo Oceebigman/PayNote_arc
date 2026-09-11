@@ -2,6 +2,8 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 import pool from '@/lib/db'
+import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 async function checkArcRpc(): Promise<{ ok: boolean; latency: number }> {
   const start = Date.now()
@@ -12,7 +14,7 @@ async function checkArcRpc(): Promise<{ ok: boolean; latency: number }> {
       body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_blockNumber', params: [], id: 1 }),
       signal: AbortSignal.timeout(5000),
     })
-    const data = await res.json()
+    const data = (await res.json()) as any
     return { ok: !!data.result, latency: Date.now() - start }
   } catch {
     return { ok: false, latency: Date.now() - start }
@@ -42,17 +44,7 @@ export default async function StatusPage() {
 
   return (
     <div className="min-h-screen transition-colors" style={{background: 'var(--bg)', color: 'var(--text)', fontFamily: '"Inter", system-ui, sans-serif'}}>
-      <nav className="sticky top-0 z-50 px-5 py-4 flex items-center justify-between border-b backdrop-blur-xl" style={{borderColor: 'var(--border)', background: 'var(--nav-bg)'}}>
-        <div className="flex items-center gap-3">
-          <svg width="24" height="24" viewBox="0 0 36 36" fill="none">
-            <defs><linearGradient id="pgs" x1="0" y1="36" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4A154B"/><stop offset="100%" stopColor="#1A44C4"/></linearGradient></defs>
-            <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="url(#pgs)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-          </svg>
-          <span className="font-black text-lg" style={{color: 'var(--text)'}}>PayNote</span>
-          <span className="text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-md" style={{background: 'var(--subtle)', color: 'var(--muted)'}}>Status</span>
-        </div>
-        <a href="/" className="text-sm font-bold hover:opacity-70" style={{color: 'var(--muted)'}}>← Back</a>
-      </nav>
+      <SiteHeader badge="Status" />
 
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
@@ -96,6 +88,8 @@ export default async function StatusPage() {
           </p>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   )
 }
