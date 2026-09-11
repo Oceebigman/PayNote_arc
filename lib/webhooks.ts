@@ -106,12 +106,13 @@ export async function dispatchWebhooks(event: string, request: PaymentRequest) {
     // Runs after the response is sent (mapped to ctx.waitUntil on
     // Cloudflare/Vercel), so delivery isn't racing the response — and isn't
     // silently dropped once the response ships on a serverless runtime.
+    // Sequential, not Promise.all: multiple concurrent pool.query() calls
+    // from one request hang on Cloudflare Workers (confirmed against the
+    // Hyperdrive-backed pool) rather than erroring.
     after(async () => {
-      await Promise.all(
-        (result.rows as WebhookRow[]).map((webhook) =>
-          deliverWebhookAttempt(pool, webhook, event, payload, 0).catch(console.error)
-        )
-      )
+      for (const webhook of result.rows as WebhookRow[]) {
+        await deliverWebhookAttempt(pool, webhook, event, payload, 0).catch(console.error)
+      }
     })
   } catch (err) {
     console.error('Webhook dispatch error:', err)

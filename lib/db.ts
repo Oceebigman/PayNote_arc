@@ -1,36 +1,49 @@
 import { Pool } from 'pg'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
 
-// On Cloudflare, the DB connection comes from the Hyperdrive binding (rotates
-// periodically), so we can't build one Pool at module load time like a normal
-// Node server. Locally (npm run dev/build, no Workers runtime) there's no
-// Hyperdrive binding and getCloudflareContext() throws — we fall back to
-// DATABASE_URL from the environment in that case.
-let cachedPool: Pool | undefined
-let cachedConnectionString: string | undefined
+// On Cloudflare, a Pool's TCP socket is tied to the request that opened it —
+// the Workers runtime tears sockets down at the end of each request, so
+// reusing one cached Pool across DIFFERENT requests (the first version of
+// this file) makes later requests hang forever on a dead connection
+// (confirmed in production: "the Workers runtime canceled this request
+// because it detected that your Worker's code had hung").
+//
+// `ctx` (ExecutionContext) is guaranteed fresh per request, so we key the
+// cache off it: multiple queries within the same request share one Pool
+// (and its connection), a new request gets a new Pool. No explicit
+// pool.end() — Workers reclaims the socket when the request ends regardless,
+// and the WeakMap entry drops once `ctx` is garbage collected.
+const cloudflarePools = new WeakMap<object, Pool>()
+
+// Locally (plain `next dev`/`next build`, no Workers runtime) there's no
+// per-request object like that and no such restriction — one Pool for the
+// life of the process, same as a normal Node server.
+let localPool: Pool | undefined
 
 function resolvePool(): Pool {
-  let connectionString = process.env.DATABASE_URL
-
   try {
-    const { env } = getCloudflareContext()
+    const { env, ctx } = getCloudflareContext()
     if (env?.HYPERDRIVE?.connectionString) {
-      connectionString = env.HYPERDRIVE.connectionString
+      let pool = cloudflarePools.get(ctx)
+      if (!pool) {
+        pool = new Pool({ connectionString: env.HYPERDRIVE.connectionString })
+        cloudflarePools.set(ctx, pool)
+      }
+      return pool
     }
   } catch {
-    // Not running inside the Cloudflare Workers runtime — use DATABASE_URL.
+    // Not running inside the Cloudflare Workers runtime — fall through to
+    // the local DATABASE_URL path below.
   }
 
+  const connectionString = process.env.DATABASE_URL
   if (!connectionString) {
     throw new Error('DATABASE_URL is not set (and no Hyperdrive binding was found)')
   }
-
-  if (!cachedPool || cachedConnectionString !== connectionString) {
-    cachedPool = new Pool({ connectionString })
-    cachedConnectionString = connectionString
+  if (!localPool) {
+    localPool = new Pool({ connectionString })
   }
-
-  return cachedPool
+  return localPool
 }
 
 // Proxy so every existing `pool.query(...)` call site keeps working

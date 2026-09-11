@@ -20,8 +20,11 @@
     "crons": ["*/5 * * * *"]
   },
 
+  // TODO: switch to https://paynote.space once that domain is pointed at
+  // the "paynote" worker (see ../../wrangler.jsonc). Using the workers.dev
+  // URL for now so cron/queue actually reach the live app.
   "vars": {
-    "APP_URL": "https://paynote.space"
+    "APP_URL": "https://paynote.ikeocee.workers.dev"
   }
 
   // Secret: wrangler secret put INTERNAL_JOBS_SECRET
