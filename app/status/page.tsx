@@ -3,6 +3,7 @@ export const revalidate = 0
 
 import pool from '@/lib/db'
 import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 async function checkArcRpc(): Promise<{ ok: boolean; latency: number }> {
   const start = Date.now()
@@ -87,6 +88,8 @@ export default async function StatusPage() {
           </p>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   )
 }

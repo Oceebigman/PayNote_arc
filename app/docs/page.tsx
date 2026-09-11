@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 const SECTIONS = [
   { id: 'quickstart', label: 'Quick Start' },
@@ -73,13 +74,17 @@ export default function DocsPage() {
   return (
     <div style={{ background: bg, color: text, fontFamily: '"Inter", system-ui, sans-serif', minHeight: '100vh' }}>
 
-      <SiteHeader badge="Docs" extra={
-        <button onClick={() => setMobileNav(o => !o)} style={{ display: 'none', padding: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: 'transparent', cursor: 'pointer' }} className="mobile-menu-btn" aria-label="Toggle sections menu">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: muted }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      } />
+      <SiteHeader badge="Docs" />
+
+      {/* Sections toggle — page-specific (the docs TOC sidebar), not site nav, so it's separate from SiteHeader's own menu. Only shown below 768px, matching the sidebar's own breakpoint. */}
+      <button onClick={() => setMobileNav(o => !o)}
+        style={{ display: 'none', alignItems: 'center', gap: '8px', width: '100%', padding: '10px 24px', borderBottom: `1px solid ${border}`, background: 'transparent', cursor: 'pointer', color: muted, fontSize: '13px', fontWeight: 600 }}
+        className="mobile-menu-btn" aria-label="Toggle sections menu">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        Sections
+      </button>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '0' }}>
 
@@ -397,6 +402,8 @@ GET https://gateway.circle.com/forward?
           <div style={{ height: '80px' }} />
         </main>
       </div>
+
+      <SiteFooter />
 
       <style>{`
         @media (max-width: 768px) {

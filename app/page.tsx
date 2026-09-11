@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 import NetworkBackground from '@/app/components/NetworkBackground'
 import LangSelector, { LANG_KEY } from '@/app/components/LangSelector'
 import { t, type Lang } from '@/lib/i18n'
@@ -299,18 +300,7 @@ export default function Home() {
         </main>
       )}
 
-      <footer className="py-5 border-t relative z-10" style={{borderColor:'var(--border)',background:'var(--nav-bg)',backdropFilter:'blur(12px)'}}>
-        <div className="max-w-3xl mx-auto px-5 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-sm" style={{color:'var(--muted)'}}>
-            PayNote · Built on <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-semibold hover:opacity-70" style={{color:'#1A44C4'}}>Arc</a>
-          </p>
-          <div className="flex items-center gap-5">
-            <a href="/templates" className="text-sm hover:opacity-70" style={{color:'var(--muted)'}}>{t(lang,'nav_templates')}</a>
-            <a href="/docs"      className="text-sm hover:opacity-70" style={{color:'var(--muted)'}}>{t(lang,'nav_docs')}</a>
-            <a href="/build"     className="text-sm hover:opacity-70" style={{color:'var(--muted)'}}>{t(lang,'nav_build')}</a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

@@ -20,7 +20,7 @@ interface SiteHeaderProps {
   badge?: string
   /** Called instead of navigating when the CTA is clicked (used on the homepage to open the inline form). */
   onCtaClick?: () => void
-  /** Extra control rendered inside the menu on mobile and before the theme toggle on desktop, e.g. the language selector on the homepage. */
+  /** Extra site-wide control (self-labeling, e.g. the language selector) rendered before the theme toggle on desktop and inside the menu on mobile. Not for page-specific controls like a docs TOC toggle — those belong in the page itself, not here. */
   extra?: ReactNode
 }
 
@@ -159,8 +159,7 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
                 </a>
               ))}
               {extra && (
-                <div className="px-4 py-3 flex items-center justify-between" style={{borderTop:'1px solid var(--border)'}}>
-                  <span className="text-sm font-semibold" style={{color:'var(--text)'}}>Language</span>
+                <div className="px-4 py-3" style={{borderTop:'1px solid var(--border)'}}>
                   {extra}
                 </div>
               )}

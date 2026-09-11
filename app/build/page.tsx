@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 export default function BuildPage() {
   const appUrl = 'https://paynote.space'
@@ -138,11 +139,7 @@ console.log(request.url)
         </div>
       </div>
 
-      <footer className="py-6 border-t mt-12" style={{borderColor: border, background: card}}>
-        <p className="text-center text-sm font-semibold" style={{color: muted}}>
-          PayNote · Built on <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-black hover:opacity-70" style={{color: '#1A44C4'}}>Arc</a>
-        </p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

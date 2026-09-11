@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 interface Request {
   id: string
@@ -112,11 +113,7 @@ export default function HistoryClient({ requests }: { requests: Request[] }) {
         )}
       </main>
 
-      <footer className="py-4 border-t" style={{borderColor:'var(--border)', background:'var(--nav-bg)'}}>
-        <p className="text-center text-xs" style={{color:'var(--muted)'}}>
-          PayNote · Powered by <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-medium" style={{color: '#1A44C4'}}>Arc</a>
-        </p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

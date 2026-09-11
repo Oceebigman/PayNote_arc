@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import SiteHeader from '@/app/components/SiteHeader'
+import SiteFooter from '@/app/components/SiteFooter'
 
 interface Template {
   id: string
@@ -71,11 +72,7 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
         </div>
       </main>
 
-      <footer className="py-4 border-t border-gray-200 bg-white">
-        <p className="text-center text-xs text-gray-300">
-          PayNote · Powered by <a href="https://arc.io" target="_blank" rel="noopener noreferrer" className="font-medium" style={{color: '#1A44C4'}}>Arc</a>
-        </p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
