@@ -73,13 +73,13 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
   )
 
   return (
-    <nav className="sticky top-0 z-50 h-[60px] px-4 sm:px-6 lg:px-10 flex items-center justify-between gap-3 border-b backdrop-blur-xl" style={{borderColor:'var(--border)',background:'var(--nav-bg)'}}>
-      <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-        <a href="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-          <svg width="20" height="20" viewBox="0 0 36 36" fill="none" className="sm:w-[22px] sm:h-[22px]">
+    <nav className="sticky top-0 z-50 h-[60px] px-3 sm:px-6 lg:px-10 flex items-center justify-between gap-2 border-b backdrop-blur-xl overflow-hidden" style={{borderColor:'var(--border)',background:'var(--nav-bg)'}}>
+      <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
+        <a href="/" className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          <svg width="18" height="18" viewBox="0 0 36 36" fill="none" className="sm:w-[22px] sm:h-[22px] shrink-0">
             <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="#1A44C4" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
           </svg>
-          <span className="font-bold text-[15px] sm:text-[17px] tracking-tight whitespace-nowrap" style={{color:'var(--text)'}}>PayNote</span>
+          <span className="font-bold text-[14px] sm:text-[17px] tracking-tight whitespace-nowrap" style={{color:'var(--text)'}}>PayNote</span>
         </a>
         {badge && (
           <span className="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md whitespace-nowrap" style={{background:'var(--subtle)',color:'var(--muted)'}}>{badge}</span>
@@ -123,14 +123,14 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
       </div>
 
       {/* Compact controls — below lg: everything lives in one menu */}
-      <div className="flex lg:hidden items-center gap-1.5 shrink-0">
-        <button onClick={toggleTheme} className="p-2 rounded-lg hover:opacity-70" style={{color:'var(--muted)'}} aria-label="Toggle theme">
+      <div className="flex lg:hidden items-center gap-1 shrink-0">
+        <button onClick={toggleTheme} className="p-1.5 rounded-lg hover:opacity-70 shrink-0" style={{color:'var(--muted)'}} aria-label="Toggle theme">
           <ThemeIcon/>
         </button>
-        <div ref={mobileMenuRef} className="relative">
+        <div ref={mobileMenuRef} className="relative shrink-0">
           <button
             onClick={() => setMenuOpen(o => !o)}
-            className="p-2 rounded-lg border hover:opacity-70 flex items-center justify-center"
+            className="p-1.5 rounded-lg border hover:opacity-70 flex items-center justify-center"
             style={{color:'var(--muted)', borderColor:'var(--border)', background:'var(--subtle)'}}
             aria-label="Menu"
           >
@@ -167,11 +167,11 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
           )}
         </div>
         {onCtaClick ? (
-          <button onClick={onCtaClick} className="text-[13px] font-semibold text-white px-3 py-2 rounded-lg whitespace-nowrap" style={{background:'#1A44C4'}}>
+          <button onClick={onCtaClick} className="text-[13px] font-semibold text-white px-2.5 py-1.5 rounded-lg whitespace-nowrap shrink-0" style={{background:'#1A44C4'}}>
             Create
           </button>
         ) : (
-          <a href="/" className="text-[13px] font-semibold text-white px-3 py-2 rounded-lg whitespace-nowrap" style={{background:'#1A44C4'}}>
+          <a href="/" className="text-[13px] font-semibold text-white px-2.5 py-1.5 rounded-lg whitespace-nowrap shrink-0" style={{background:'#1A44C4'}}>
             Create
           </a>
         )}
