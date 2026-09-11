@@ -44,7 +44,7 @@ export default function HistoryClient({ requests }: { requests: Request[] }) {
   return (
     <div className="min-h-screen flex flex-col" style={{background: 'var(--bg)'}}>
       <SiteHeader badge="History" />
-      <main className="flex-1 px-4 py-12 max-w-2xl mx-auto w-full">
+      <main className="flex-1 px-4 lg:px-8 py-12 max-w-2xl lg:max-w-3xl mx-auto w-full">
 
         <div className="flex items-center gap-3 mb-8">
           <div>

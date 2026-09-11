@@ -46,7 +46,7 @@ export default async function StatusPage() {
     <div className="min-h-screen transition-colors" style={{background: 'var(--bg)', color: 'var(--text)', fontFamily: '"Inter", system-ui, sans-serif'}}>
       <SiteHeader badge="Status" />
 
-      <div className="max-w-2xl mx-auto px-4 py-12">
+      <div className="max-w-2xl lg:max-w-3xl mx-auto px-4 lg:px-8 py-12">
         <div className="text-center mb-12">
           <div className={`inline-flex items-center gap-2 text-sm font-black px-5 py-3 rounded-2xl mb-4 ${allOk ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
             <span className={`w-2.5 h-2.5 rounded-full ${allOk ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}/>

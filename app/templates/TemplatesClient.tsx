@@ -35,7 +35,7 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
   return (
     <div className="min-h-screen flex flex-col" style={{background: 'var(--bg)'}}>
       <SiteHeader badge="Templates" />
-      <main className="flex-1 px-4 py-12 max-w-2xl mx-auto w-full">
+      <main className="flex-1 px-4 lg:px-8 py-12 max-w-2xl lg:max-w-4xl mx-auto w-full">
 
         <div className="flex items-center gap-3 mb-8">
           <div>
@@ -49,7 +49,7 @@ export default function TemplatesClient({ templates }: { templates: Template[] }
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {templates.map(t => {
             const colors = CATEGORY_COLORS[t.category] || CATEGORY_COLORS.invoice
             return (

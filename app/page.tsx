@@ -117,7 +117,7 @@ export default function Home() {
       <SiteHeader onCtaClick={scrollToForm} extra={<LangSelector lang={lang} onChange={handleLangChange}/>} />
 
       {!showForm ? (
-        <main className="flex-1 flex flex-col px-5 sm:px-10 py-20 sm:py-28 max-w-3xl mx-auto w-full relative z-10">
+        <main className="flex-1 flex flex-col px-5 sm:px-10 lg:px-16 py-20 sm:py-28 max-w-3xl lg:max-w-5xl mx-auto w-full relative z-10">
           <div className="mb-24 relative overflow-hidden -mx-5 sm:-mx-10 px-5 sm:px-10">
             <NetworkBackground />
             <div className="fade-up-1 relative inline-flex items-center gap-2 text-xs font-semibold mb-8" style={{color:'var(--muted)'}}>
