@@ -10,14 +10,16 @@
     "binding": "ASSETS"
   },
 
-  // Points at a Postgres instance via Cloudflare's connection pooler — the
-  // VPS-hosted Postgres is gone, so `id` needs to be a Hyperdrive config
-  // created against whatever Postgres now backs this (Neon/Supabase/etc).
-  // Run: wrangler hyperdrive create paynote-db --connection-string="postgresql://..."
+  // Points at Postgres via Cloudflare's connection pooler — the VPS-hosted
+  // Postgres is gone, so this is a fresh instance (Render free Postgres,
+  // schema.sql applied). `id` is the "paynote-db" Hyperdrive config created
+  // in the Cloudflare dashboard (Storage & databases -> Hyperdrive).
+  // Note: this free Render database expires 2026-10-11 — replace it (and
+  // update this connection) before then.
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "REPLACE_WITH_HYPERDRIVE_ID",
+      "id": "40093cb58fa8481ca2ad8a70caa990c7",
       "localConnectionString": "postgresql://egcrypt:CHANGE_ME@localhost:5432/paynote_db"
     }
   ],
