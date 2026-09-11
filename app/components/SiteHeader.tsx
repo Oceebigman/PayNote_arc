@@ -74,15 +74,19 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
 
   return (
     <nav className="sticky top-0 z-50 h-[60px] px-3 sm:px-6 lg:px-10 flex items-center justify-between gap-2 border-b backdrop-blur-xl" style={{borderColor:'var(--border)',background:'var(--nav-bg)'}}>
+      {/* min-w-0 on every level here is deliberate: if anything ever makes
+          this row too tight, the wordmark truncates first — the CTA and
+          menu on the right must never be the thing that gets pushed
+          off-screen. */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
-        <a href="/" className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        <a href="/" className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
           <svg width="18" height="18" viewBox="0 0 36 36" fill="none" className="sm:w-[22px] sm:h-[22px] shrink-0">
             <path d="M9 4 L9 32 M9 4 L21 4 C26 4 29 7 29 12 C29 17 26 20 21 20 L9 20" stroke="#1A44C4" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
           </svg>
-          <span className="font-bold text-[14px] sm:text-[17px] tracking-tight whitespace-nowrap" style={{color:'var(--text)'}}>PayNote</span>
+          <span className="font-bold text-[14px] sm:text-[17px] tracking-tight whitespace-nowrap overflow-hidden text-ellipsis min-w-0" style={{color:'var(--text)'}}>PayNote</span>
         </a>
         {badge && (
-          <span className="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md whitespace-nowrap" style={{background:'var(--subtle)',color:'var(--muted)'}}>{badge}</span>
+          <span className="hidden sm:inline-block shrink-0 text-[11px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md whitespace-nowrap" style={{background:'var(--subtle)',color:'var(--muted)'}}>{badge}</span>
         )}
       </div>
 
@@ -142,22 +146,27 @@ export default function SiteHeader({ badge, onCtaClick, extra }: SiteHeaderProps
             </svg>
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-[calc(100%+8px)] z-[100] rounded-xl border overflow-hidden" style={{width:'240px', background:'var(--card)', borderColor:'var(--border)', boxShadow:'var(--shadow)'}}>
-              {PRIMARY_LINKS.map((link, i) => (
-                <a key={link.href} href={link.href} onClick={()=>setMenuOpen(false)}
-                  className="block px-4 py-3 text-sm font-semibold hover:opacity-80"
-                  style={{color:'var(--text)', borderTop: i===0 ? 'none' : '1px solid var(--border)'}}>
-                  {link.label}
-                </a>
-              ))}
-              {MORE_LINKS.map(link => (
-                <a key={link.href} href={link.href} onClick={()=>setMenuOpen(false)}
-                  className="flex flex-col px-4 py-3 hover:opacity-80"
-                  style={{borderTop: '1px solid var(--border)'}}>
-                  <span className="text-sm font-semibold" style={{color:'var(--text)'}}>{link.label}</span>
-                  <span className="text-xs mt-0.5" style={{color:'var(--muted)'}}>{link.desc}</span>
-                </a>
-              ))}
+            <div className="absolute right-0 top-[calc(100%+8px)] z-[100] rounded-xl border" style={{width:'240px', background:'var(--card)', borderColor:'var(--border)', boxShadow:'var(--shadow)'}}>
+              {/* Only the link list clips to the rounded corners — extra (e.g.
+                  the language selector) sits outside this so its own popup
+                  isn't cut off by overflow-hidden here. */}
+              <div className="rounded-xl overflow-hidden">
+                {PRIMARY_LINKS.map((link, i) => (
+                  <a key={link.href} href={link.href} onClick={()=>setMenuOpen(false)}
+                    className="block px-4 py-3 text-sm font-semibold hover:opacity-80"
+                    style={{color:'var(--text)', borderTop: i===0 ? 'none' : '1px solid var(--border)'}}>
+                    {link.label}
+                  </a>
+                ))}
+                {MORE_LINKS.map(link => (
+                  <a key={link.href} href={link.href} onClick={()=>setMenuOpen(false)}
+                    className="flex flex-col px-4 py-3 hover:opacity-80"
+                    style={{borderTop: '1px solid var(--border)'}}>
+                    <span className="text-sm font-semibold" style={{color:'var(--text)'}}>{link.label}</span>
+                    <span className="text-xs mt-0.5" style={{color:'var(--muted)'}}>{link.desc}</span>
+                  </a>
+                ))}
+              </div>
               {extra && (
                 <div className="px-4 py-3" style={{borderTop:'1px solid var(--border)'}}>
                   {extra}
